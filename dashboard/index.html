@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La evolución de Jardine</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Análisis táctico · Datos StatsBomb</p>
+      <h1>La evolución de Jardine</h1>
+      <p class="intro">
+        Una vista sencilla de cómo cambiaron la estructura, la presión,
+        la progresión y las transiciones de sus equipos.
+      </p>
+      <p class="note">
+        Los datos son observacionales: muestran patrones asociados, no prueban
+        por sí solos la causa de los campeonatos.
+      </p>
+    </header>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Panorama</p>
+          <h2>Comparación por etapa</h2>
+        </div>
+        <label class="select-label" for="stage-filter">
+          Mostrar etapa
+          <select id="stage-filter">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+      </div>
+      <div id="stage-summary" class="stage-grid" aria-live="polite">
+        <p class="loading">Cargando resumen...</p>
+      </div>
+    </section>
+
+    <section class="section two-columns">
+      <article class="panel">
+        <p class="eyebrow">Estructura</p>
+        <h2>Formaciones iniciales</h2>
+        <div id="formation-summary" class="table-wrap">
+          <p class="loading">Cargando formaciones...</p>
+        </div>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Decisiones observables</p>
+        <h2>Ajustes durante el partido</h2>
+        <div id="decision-summary" class="table-wrap">
+          <p class="loading">Cargando decisiones...</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="section panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Evidencia partido a partido</p>
+          <h2>Partidos analizados</h2>
+        </div>
+        <label class="select-label" for="team-filter">
+          Equipo
+          <select id="team-filter">
+            <option value="all">Todos</option>
+          </select>
+        </label>
+      </div>
+      <div id="match-table" class="table-wrap">
+        <p class="loading">Cargando partidos...</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Fuente: <code>hackathon.db</code> y salidas de <code>jardine_analysis</code></span>
+      <span>Reproducción: <code>python -m jardine_analysis.pipeline</code></span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
