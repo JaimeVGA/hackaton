@@ -1,0 +1,10 @@
+stage,team,estado,matches,event_rows,average_goal_difference
+america_championship_context,América,empatando,70,70801,0.0
+america_championship_context,América,ganando,47,36110,1.5706452506230961
+america_championship_context,América,perdiendo,32,22461,-1.1797337607408396
+post_championship_context,América,empatando,58,55593,0.0
+post_championship_context,América,ganando,35,30715,1.6412502034836398
+post_championship_context,América,perdiendo,24,19582,-1.3181493208048207
+pre_america,Atlético San Luis,empatando,55,43881,0.0
+pre_america,Atlético San Luis,ganando,24,12164,1.1711608023676423
+pre_america,Atlético San Luis,perdiendo,32,23562,-1.5287327052032935

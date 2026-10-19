@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "pre_america": {
+      "rule": "Focal team is Atlético de San Luis in the match identifier.",
+      "period": "Available 2022-2023 context in the database",
+      "confidence": "contextual"
+    },
+    "america_championship_context": {
+      "rule": "Focal team is América and match year is 2024 or earlier.",
+      "period": "Available América context through 2024",
+      "confidence": "contextual"
+    },
+    "post_championship_context": {
+      "rule": "Focal team is América and match year is after 2024.",
+      "period": "Available América context after 2024",
+      "confidence": "contextual"
+    }
+  },
+  "limitations": [
+    "partidos.competencia and partidos.fecha are empty in the source database",
+    "stage labels are contextual and do not independently prove tournament membership",
+    "coordinate direction is not normalized; PPDA uses raw x <= 72 and high actions use x >= 80"
+  ]
+}
