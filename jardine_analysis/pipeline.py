@@ -16,7 +16,7 @@ HIGH_X = 80.0
 PPDA_X_LIMIT = 72.0
 STAGE_RULES = {
     "pre_america": {
-        "rule": "Focal team is Atlético de San Luis in the match identifier.",
+        "rule": "Focal team is Atlético de San Luis and the match ID year is 2022 or 2023.",
         "period": "Available 2022-2023 context in the database",
         "confidence": "contextual",
     },
@@ -28,6 +28,11 @@ STAGE_RULES = {
     "post_championship_context": {
         "rule": "Focal team is América and match year is after 2024.",
         "period": "Available América context after 2024",
+        "confidence": "contextual",
+    },
+    "other_context": {
+        "rule": "The focal team or match ID year does not match the contextual stages above.",
+        "period": "Excluded from the three focal narrative stages",
         "confidence": "contextual",
     },
 }
@@ -44,7 +49,7 @@ def classify_stage(match_id: str) -> str:
     """Assign a conservative narrative stage from the match identifier."""
     year = _match_year(match_id)
     if match_id.startswith("AtleticoSanLuis_"):
-        return "pre_america"
+        return "pre_america" if year <= 2023 else "other_context"
     if match_id.startswith("America_") or (
         "_vs_America_" in match_id and not match_id.startswith("AtleticoSanLuis_")
     ):
@@ -52,7 +57,7 @@ def classify_stage(match_id: str) -> str:
             return "america_championship_context"
         return "post_championship_context"
     if "_vs_AtleticoSanLuis_" in match_id:
-        return "pre_america"
+        return "pre_america" if year <= 2023 else "other_context"
     return "other_context"
 
 
@@ -161,6 +166,25 @@ def _opponent_for_match(
     return opponent
 
 
+def _venue_for_match(match_id: str, team: str) -> str:
+    parts = match_id.split("_vs_")
+    if len(parts) != 2:
+        return "unknown"
+    focal_token = {
+        AMERICA: "America",
+        ATLETICO_SAN_LUIS: "AtleticoSanLuis",
+    }.get(team)
+    if focal_token is None:
+        return "unknown"
+    home_team = parts[0]
+    away_team = parts[1].rsplit("_", 1)[0]
+    if home_team == focal_token:
+        return "home"
+    if away_team == focal_token:
+        return "away"
+    return "unknown"
+
+
 def count_formation_changes(formations: pd.DataFrame) -> pd.DataFrame:
     """Count actual formation changes, ignoring repeated snapshots."""
     if formations.empty:
@@ -189,6 +213,10 @@ def count_formation_changes(formations: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def _records(frame: pd.DataFrame) -> list[dict[str, Any]]:
+    return json.loads(frame.to_json(orient="records", force_ascii=False))
+
+
 def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
     """Read the SQLite dataset and export match, stage, and action summaries."""
     output_path = Path(output_dir)
@@ -200,15 +228,18 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
         )
         selected = matches[matches["id_partido"].map(_team_for_match).notna()].copy()
         passes = pd.read_sql_query(
-            "SELECT id_partido, equipo, x_inicio, progresivo, pase_clave FROM pases",
+            "SELECT id_evento, id_partido, possession_id, equipo, jugador, receptor, "
+            "resultado, x_inicio, y_inicio, x_fin, y_fin, progresivo, pase_clave FROM pases",
             connection,
         )
         defensive = pd.read_sql_query(
-            "SELECT id_partido, equipo, x, zona, tipo_accion FROM acciones_defensivas",
+            "SELECT id_partido, equipo, x, y, zona, tipo_accion "
+            "FROM acciones_defensivas",
             connection,
         )
         shots = pd.read_sql_query(
-            "SELECT id_partido, equipo, xg, tipo_gol_o_remate FROM remates",
+            "SELECT id_remate, id_partido, possession_id, equipo, jugador, minuto, segundo, "
+            "xg, tipo_gol_o_remate FROM remates",
             connection,
         )
         formations = pd.read_sql_query(
@@ -230,27 +261,88 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
             "SELECT id_partido, minuto, equipo, tipo FROM disciplina_sustituciones",
             connection,
         )
-
+        selected_ids = selected["id_partido"].tolist()
+        placeholders = ",".join("?" for _ in selected_ids) or "NULL"
+        events = pd.read_sql_query(
+            "SELECT id_evento, id_partido, event_index, equipo, tipo_evento, jugador, "
+            "jugador_id, x_inicio, y_inicio, possession_id, possession_team, patron_juego "
+            f"FROM eventos WHERE id_partido IN ({placeholders})",
+            connection,
+            params=selected_ids,
+        )
+        possessions = pd.read_sql_query(
+            "SELECT id_partido, possession_id, possession_team, duracion, eventos, pases, "
+            "conducciones, tiros, recuperacion_alta FROM posesiones "
+            f"WHERE id_partido IN ({placeholders})",
+            connection,
+            params=selected_ids,
+        )
+        player_features = pd.read_sql_query(
+            "SELECT id_partido, equipo, jugador_id, jugador, periodo, ventana_minuto, "
+            "minutos_activos, pases, pases_progresivos, conducciones, xa, xg, presiones, "
+            "recuperaciones, perdidas, duelos_ganados, estado_partido "
+            "FROM features_jugador_ventana "
+            f"WHERE id_partido IN ({placeholders})",
+            connection,
+            params=selected_ids,
+        )
+        player_appearances = pd.read_sql_query(
+            "SELECT id_partido, equipo, jugador_id, posicion FROM jugadores_partido "
+            f"WHERE id_partido IN ({placeholders})",
+            connection,
+            params=selected_ids,
+        )
+    roster_team = (
+        player_appearances.drop_duplicates(["id_partido", "jugador_id"])
+        .rename(columns={"equipo": "roster_team"})
+        [["id_partido", "jugador_id", "roster_team"]]
+    )
+    player_features = player_features.merge(
+        roster_team,
+        on=["id_partido", "jugador_id"],
+        how="inner",
+    )
+    player_features = player_features[
+        player_features["equipo"].eq(player_features["roster_team"])
+    ].copy()
     rows: list[dict[str, Any]] = []
     for match_id in selected["id_partido"]:
         team = _team_for_match(match_id)
         assert team is not None
+        opponent = _opponent_for_match(
+            match_id,
+            team,
+            set(passes.loc[passes["id_partido"].eq(match_id), "equipo"]),
+        )
         rows.append(
-            compute_match_metrics(
-                match_id=match_id,
-                team=team,
-                opponent=_opponent_for_match(
-                    match_id,
-                    team,
-                    set(passes.loc[passes["id_partido"].eq(match_id), "equipo"]),
+            {
+                **compute_match_metrics(
+                    match_id=match_id,
+                    team=team,
+                    opponent=opponent,
+                    passes=passes[passes["id_partido"].eq(match_id)],
+                    defensive=defensive[defensive["id_partido"].eq(match_id)],
+                    shots=shots[shots["id_partido"].eq(match_id)],
                 ),
-                passes=passes[passes["id_partido"].eq(match_id)],
-                defensive=defensive[defensive["id_partido"].eq(match_id)],
-                shots=shots[shots["id_partido"].eq(match_id)],
-            )
+                "opponent": opponent,
+                "venue": _venue_for_match(match_id, team),
+            }
         )
 
     match_metrics = pd.DataFrame(rows)
+    context = match_metrics[
+        ["match_id", "team", "opponent", "venue", "stage"]
+    ].copy()
+    events = events.merge(
+        context.rename(columns={"match_id": "id_partido", "team": "focal_team"}),
+        on="id_partido",
+        how="inner",
+    )
+    possessions = possessions.merge(
+        context.rename(columns={"match_id": "id_partido", "team": "focal_team"}),
+        on="id_partido",
+        how="inner",
+    )
     focal_state = match_state[
         match_state["id_partido"].isin(match_metrics["match_id"])
         & match_state.apply(
@@ -288,7 +380,7 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
                 "rules": STAGE_RULES,
                 "limitations": [
                     "partidos.competencia and partidos.fecha are empty in the source database",
-                    "stage labels are contextual and do not independently prove tournament membership",
+                    "stage labels are contextual and do not independently prove tournament membership; Atlético de San Luis matches after 2023 are excluded from the pre-América stage",
                     "coordinate direction is not normalized; PPDA uses raw x <= 72 while high actions use the source ATTACKING_THIRD zone",
                 ],
             },
@@ -314,6 +406,25 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
         )
     )
     stage_summary.to_csv(output_path / "stage_summary.csv", index=False)
+    context_metrics = {
+        "average_passes": ("passes", "mean"),
+        "average_progressive_passes": ("progressive_passes", "mean"),
+        "average_pressures": ("pressures", "mean"),
+        "average_high_pressures": ("high_pressures", "mean"),
+        "average_recoveries": ("recoveries", "mean"),
+        "average_xg": ("xg", "mean"),
+        "average_ppda": ("ppda", "mean"),
+    }
+    opponent_summary = (
+        match_metrics.groupby(["stage", "team", "opponent"], as_index=False, dropna=False)
+        .agg(matches=("match_id", "nunique"), **context_metrics)
+        .sort_values(["stage", "team", "matches"], ascending=[True, True, False])
+    )
+    venue_summary = (
+        match_metrics.groupby(["stage", "team", "venue"], as_index=False, dropna=False)
+        .agg(matches=("match_id", "nunique"), **context_metrics)
+        .sort_values(["stage", "team", "venue"])
+    )
     focal_formations = formations[
         formations["id_partido"].isin(match_metrics["match_id"])
         & formations.apply(
@@ -472,6 +583,360 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
         ]
     ].sort_values(["high_recoveries", "xg"], ascending=False)
     key_actions.head(25).to_csv(output_path / "key_actions.csv", index=False)
+
+    shot_events = events[events["tipo_evento"].eq("Shot")].rename(
+        columns={
+            "id_evento": "shot_event_id",
+            "equipo": "event_team",
+            "possession_id": "event_possession_id",
+            "x_inicio": "x",
+            "y_inicio": "y",
+            "patron_juego": "pattern",
+        }
+    )
+    shot_map = shot_events.merge(
+        shots.rename(
+            columns={
+                "id_remate": "shot_event_id",
+                "equipo": "shooting_team",
+                "possession_id": "shot_possession_id",
+                "tipo_gol_o_remate": "outcome",
+            }
+        )[
+            [
+                "shot_event_id",
+                "shooting_team",
+                "shot_possession_id",
+                "xg",
+                "outcome",
+            ]
+        ],
+        on="shot_event_id",
+        how="inner",
+        validate="one_to_one",
+    )
+    shot_map = shot_map[
+        shot_map["x"].notna() & shot_map["y"].notna()
+    ].copy()
+    shot_map["side"] = shot_map.apply(
+        lambda row: "focal" if row["shooting_team"] == row["focal_team"] else "opponent",
+        axis=1,
+    )
+    shot_map = shot_map[
+        [
+            "id_partido",
+            "focal_team",
+            "opponent",
+            "venue",
+            "stage",
+            "shooting_team",
+            "side",
+            "x",
+            "y",
+            "xg",
+            "outcome",
+            "pattern",
+            "event_possession_id",
+        ]
+    ].rename(
+        columns={
+            "id_partido": "match_id",
+            "focal_team": "team",
+            "shooting_team": "shooting_team",
+            "event_possession_id": "possession_id",
+        }
+    )
+
+    focal_passes = passes.merge(
+        context.rename(columns={"match_id": "id_partido", "team": "focal_team"}),
+        on="id_partido",
+        how="inner",
+    )
+    focal_passes = focal_passes[
+        focal_passes["equipo"].eq(focal_passes["focal_team"])
+    ].copy()
+    pass_network = (
+        focal_passes[focal_passes["jugador"].notna() & focal_passes["receptor"].notna()]
+        .groupby(
+            ["id_partido", "focal_team", "stage", "opponent", "venue", "jugador", "receptor"],
+            as_index=False,
+        )
+        .size()
+        .rename(
+            columns={
+                "id_partido": "match_id",
+                "focal_team": "team",
+                "jugador": "player",
+                "receptor": "receiver",
+                "size": "passes",
+            }
+        )
+    )
+
+    player_events = events[
+        events["equipo"].eq(events["focal_team"])
+        & events["jugador_id"].notna()
+        & events["x_inicio"].notna()
+        & events["y_inicio"].notna()
+    ].copy()
+    player_events["x_inicio"] = pd.to_numeric(
+        player_events["x_inicio"], errors="coerce"
+    )
+    player_events["y_inicio"] = pd.to_numeric(
+        player_events["y_inicio"], errors="coerce"
+    )
+    player_events = player_events[
+        player_events["x_inicio"].between(0, 120)
+        & player_events["y_inicio"].between(0, 80)
+    ].copy()
+    player_events["grid_x"] = (player_events["x_inicio"] // 10).clip(upper=11).astype(int)
+    player_events["grid_y"] = (player_events["y_inicio"] // 10).clip(upper=7).astype(int)
+    player_activity_map = (
+        player_events.groupby(
+            [
+                "focal_team",
+                "stage",
+                "jugador_id",
+                "jugador",
+                "grid_x",
+                "grid_y",
+            ],
+            as_index=False,
+            dropna=False,
+        )
+        .size()
+        .rename(
+            columns={
+                "focal_team": "team",
+                "jugador_id": "player_id",
+                "jugador": "player",
+                "size": "events",
+            }
+        )
+        .sort_values(["team", "stage", "player_id", "grid_y", "grid_x"])
+    )
+
+    focal_features = player_features.merge(
+        context.rename(columns={"match_id": "id_partido", "team": "focal_team"}),
+        on="id_partido",
+        how="inner",
+    )
+    focal_features = focal_features[
+        focal_features["equipo"].eq(focal_features["focal_team"])
+    ].copy()
+    score_state_summary = (
+        focal_features.groupby(
+            ["stage", "focal_team", "estado_partido"],
+            as_index=False,
+            dropna=False,
+        )
+        .agg(
+            matches=("id_partido", "nunique"),
+            active_windows=("ventana_minuto", "size"),
+            passes=("pases", "sum"),
+            progressive_passes=("pases_progresivos", "sum"),
+            carries=("conducciones", "sum"),
+            xa=("xa", "sum"),
+            xg=("xg", "sum"),
+            pressures=("presiones", "sum"),
+            recoveries=("recuperaciones", "sum"),
+            losses=("perdidas", "sum"),
+            duels_won=("duelos_ganados", "sum"),
+        )
+        .rename(columns={"focal_team": "team", "estado_partido": "score_state"})
+    )
+    if not player_appearances.empty:
+        player_positions = (
+            player_appearances.dropna(subset=["posicion"])
+            .groupby(["equipo", "jugador_id"], as_index=False)["posicion"]
+            .agg(lambda values: values.mode().iloc[0])
+            .rename(columns={"posicion": "position"})
+        )
+        focal_features = focal_features.merge(
+            player_positions,
+            on=["equipo", "jugador_id"],
+            how="left",
+        )
+    else:
+        focal_features["position"] = None
+    player_summary = (
+        focal_features.groupby(
+            ["focal_team", "stage", "jugador_id", "jugador", "position"],
+            as_index=False,
+            dropna=False,
+        )
+        .agg(
+            matches=("id_partido", "nunique"),
+            active_windows=("ventana_minuto", "size"),
+            passes=("pases", "sum"),
+            progressive_passes=("pases_progresivos", "sum"),
+            carries=("conducciones", "sum"),
+            xa=("xa", "sum"),
+            xg=("xg", "sum"),
+            pressures=("presiones", "sum"),
+            recoveries=("recuperaciones", "sum"),
+            losses=("perdidas", "sum"),
+            duels_won=("duelos_ganados", "sum"),
+        )
+        .rename(
+            columns={
+                "focal_team": "team",
+                "jugador_id": "player_id",
+                "jugador": "player",
+            }
+        )
+        .sort_values(["team", "stage", "active_windows"], ascending=[True, True, False])
+    )
+
+    possession_summary = (
+        possessions[possessions["possession_team"].eq(possessions["focal_team"])]
+        .groupby(["stage", "focal_team"], as_index=False)
+        .agg(
+            possessions=("possession_id", "size"),
+            average_duration_seconds=("duracion", "mean"),
+            average_events=("eventos", "mean"),
+            average_passes=("pases", "mean"),
+            average_carries=("conducciones", "mean"),
+            shots=("tiros", "sum"),
+            high_recoveries=("recuperacion_alta", "sum"),
+        )
+        .rename(columns={"focal_team": "team"})
+    )
+
+    patterns = events[
+        events["patron_juego"].isin(
+            ["From Corner", "From Free Kick", "From Throw In"]
+        )
+        & events["possession_id"].notna()
+        & events["possession_team"].notna()
+    ]
+    if not patterns.empty:
+        piece_possessions = (
+            patterns.groupby(
+                [
+                    "id_partido",
+                    "possession_id",
+                    "focal_team",
+                    "opponent",
+                    "venue",
+                    "stage",
+                    "possession_team",
+                    "patron_juego",
+                ],
+                as_index=False,
+            )
+            .size()
+            .rename(columns={"size": "event_rows", "patron_juego": "pattern"})
+        )
+        piece_possessions["role"] = piece_possessions.apply(
+            lambda row: (
+                "offensive"
+                if row["possession_team"] == row["focal_team"]
+                else "defensive"
+            ),
+            axis=1,
+        )
+        set_piece_shots = (
+            shot_map.merge(
+                piece_possessions[
+                    ["id_partido", "possession_id", "pattern", "role", "focal_team"]
+                ],
+                left_on=["match_id", "possession_id", "pattern", "team"],
+                right_on=[
+                    "id_partido",
+                    "possession_id",
+                    "pattern",
+                    "focal_team",
+                ],
+                how="inner",
+            )
+            .groupby(["id_partido", "possession_id", "pattern", "role"], as_index=False)
+            .agg(
+                shots=("outcome", "size"),
+                goals=("outcome", lambda values: values.eq("Goal").sum()),
+                xg=("xg", "sum"),
+            )
+        )
+        piece_possessions = piece_possessions.merge(
+            set_piece_shots,
+            on=["id_partido", "possession_id", "pattern", "role"],
+            how="left",
+        )
+        piece_possessions[["shots", "goals", "xg"]] = piece_possessions[
+            ["shots", "goals", "xg"]
+        ].fillna(0)
+        set_piece_summary = (
+            piece_possessions.groupby(
+                ["stage", "focal_team", "role", "pattern"], as_index=False
+            )
+            .agg(
+                matches=("id_partido", "nunique"),
+                possessions=("possession_id", "nunique"),
+                event_rows=("event_rows", "sum"),
+                shots=("shots", "sum"),
+                goals=("goals", "sum"),
+                xg=("xg", "sum"),
+            )
+            .rename(columns={"focal_team": "team"})
+        )
+    else:
+        set_piece_summary = pd.DataFrame(
+            columns=[
+                "stage",
+                "team",
+                "role",
+                "pattern",
+                "matches",
+                "possessions",
+                "event_rows",
+                "shots",
+                "goals",
+                "xg",
+            ]
+        )
+
+    report_data = {
+        "metadata": {
+            "match_count": int(len(match_metrics)),
+            "coordinate_system": "Coordenadas originales de la fuente: x de 0 a 120 e y de 0 a 80; no se ajustan según la dirección del ataque.",
+            "limitations": [
+                "Las etapas son contextuales; no confirman la competición de cada partido.",
+                "La fecha, la competición y el estadio están vacíos en la tabla de partidos de origen.",
+                "Las coordenadas no indican hacia qué portería se ataca; por eso no se calcula el dominio territorial (Field Tilt).",
+                "La red de pases incluye solo pases cuyo receptor está identificado.",
+                "La actividad de jugadores se resume en intervalos de cinco minutos de la fuente, no en minutos exactos jugados.",
+                "El resumen de balón parado cuenta posesiones asociadas a una reanudación, no únicamente la jugada inmediata del saque.",
+                "Las asociaciones observadas no demuestran la intención táctica ni una relación de causa y efecto.",
+            ],
+            "definitions": {
+                "possession": "Tramo continuo en el que un equipo controla el balón, según la tabla de posesiones de la fuente.",
+                "offensive_sequence": "Posesión utilizada para observar cómo un equipo inicia, avanza y termina sus ataques.",
+                "pressure": "Acción de presión registrada por la fuente. Se considera alta si aparece en el tercio ofensivo según esa misma fuente.",
+                "ppda": "Pases del rival divididos entre acciones defensivas del equipo en la zona definida por la fuente. Un valor menor suele indicar presión más intensa.",
+                "transition": "Secuencia registrada desde una recuperación hasta un posible remate; no representa todas las transiciones del partido.",
+                "set_piece": "Posesión relacionada con un córner, tiro libre o saque de banda; no necesariamente termina en un remate inmediato.",
+            },
+        },
+        "matches": _records(match_metrics),
+        "stage_summary": _records(stage_summary),
+        "context_summary": _records(context_summary),
+        "opponent_summary": _records(opponent_summary),
+        "venue_summary": _records(venue_summary),
+        "score_state_summary": _records(score_state_summary),
+        "formation_summary": _records(formation_summary),
+        "transition_summary": _records(transition_summary),
+        "decision_summary": _records(decision_summary),
+        "possession_summary": _records(possession_summary),
+        "player_summary": _records(player_summary),
+        "player_activity_map": _records(player_activity_map),
+        "pass_network": _records(pass_network),
+        "shot_map": _records(shot_map),
+        "set_piece_summary": _records(set_piece_summary),
+    }
+    (output_path / "report_data.json").write_text(
+        json.dumps(report_data, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
     return match_metrics
 
 
