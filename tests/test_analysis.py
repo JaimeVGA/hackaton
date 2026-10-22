@@ -8,7 +8,11 @@ from jardine_analysis.pipeline import (
     classify_stage,
     compute_match_metrics,
     compute_ppda,
+    compute_defensive_profile,
+    compute_progression_profile,
+    compute_territorial_proxy,
     run_pipeline,
+    summarize_variability,
 )
 
 
@@ -107,6 +111,37 @@ def test_compute_match_metrics_returns_normalized_tactical_summary():
     assert result["xg"] == 0.5
     assert result["high_pressures"] == 1
     assert result["recoveries"] == 1
+
+
+def test_new_profiles_preserve_denominators_and_proxy_label():
+    passes = pd.DataFrame([
+        {"equipo": "América", "x_inicio": 70, "y_inicio": 10, "progresivo": 1, "pase_clave": 0},
+        {"equipo": "Rival", "x_inicio": 80, "y_inicio": 50, "progresivo": 0, "pase_clave": 0},
+    ])
+    defensive = pd.DataFrame([
+        {"equipo": "América", "tipo_accion": "Pressure", "zona": "MIDDLE_THIRD"},
+    ])
+    profile = compute_progression_profile(passes, "América")
+    territorial = compute_territorial_proxy(passes, "América")
+    defense = compute_defensive_profile(defensive, "América")
+
+    assert profile["passes"].sum() == 1
+    assert territorial["spatial_events"] == 2
+    assert territorial["proxy_share"] == 0.5
+    assert "no es Field Tilt oficial" in territorial["proxy_label"]
+    assert defense.iloc[0]["actions"] == 1
+
+
+def test_variability_uses_null_std_for_single_match():
+    metrics = pd.DataFrame([
+        {"stage": "s", "team": "América", "passes": 10, "progressive_passes": 2,
+         "pressures": 1, "recoveries": 1, "shots": 1, "xg": 0.2, "ppda": None},
+    ])
+    result = summarize_variability(metrics)
+    passes = result[result["metric"].eq("passes")].iloc[0]
+    assert passes["matches"] == 1
+    assert passes["mean"] == 10
+    assert pd.isna(passes["std"])
 
 
 def test_run_pipeline_exports_report_data(tmp_path):

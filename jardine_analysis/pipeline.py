@@ -217,6 +217,97 @@ def _records(frame: pd.DataFrame) -> list[dict[str, Any]]:
     return json.loads(frame.to_json(orient="records", force_ascii=False))
 
 
+def compute_progression_profile(passes: pd.DataFrame, team: str) -> pd.DataFrame:
+    """Summarize observable progression by source zone and lateral lane."""
+    team_passes = passes[passes["equipo"].eq(team)].copy()
+    if team_passes.empty:
+        return pd.DataFrame(
+            columns=["zone", "lane", "passes", "progressive_passes", "key_passes"]
+        )
+    team_passes["zone"] = pd.cut(
+        pd.to_numeric(team_passes["x_inicio"], errors="coerce"),
+        bins=[-1, 40, 80, 121],
+        labels=["0-40", "40-80", "80-120"],
+    ).astype("object").fillna("unknown")
+    team_passes["lane"] = pd.cut(
+        pd.to_numeric(team_passes["y_inicio"], errors="coerce"),
+        bins=[-1, 26.67, 53.33, 81],
+        labels=["left", "center", "right"],
+    ).astype("object").fillna("unknown")
+    return (
+        team_passes.groupby(["zone", "lane"], as_index=False, dropna=False)
+        .agg(
+            passes=("equipo", "size"),
+            progressive_passes=("progresivo", lambda values: _numeric(values).sum()),
+            key_passes=("pase_clave", lambda values: _numeric(values).sum()),
+        )
+    )
+
+
+def compute_territorial_proxy(
+    passes: pd.DataFrame, team: str, *, x_limit: float = 60
+) -> dict[str, Any]:
+    """Estimate territorial share without claiming directional Field Tilt."""
+    valid = passes[pd.to_numeric(passes["x_inicio"], errors="coerce").notna()].copy()
+    valid["x_inicio"] = pd.to_numeric(valid["x_inicio"], errors="coerce")
+    spatial = valid[valid["x_inicio"].ge(x_limit)]
+    focal = int((spatial["equipo"] == team).sum())
+    opponent = int((spatial["equipo"] != team).sum())
+    total = focal + opponent
+    return {
+        "team": team,
+        "x_limit": x_limit,
+        "spatial_events": total,
+        "team_events": focal,
+        "opponent_events": opponent,
+        "proxy_share": None if total == 0 else focal / total,
+        "proxy_label": "control territorial proxy; no es Field Tilt oficial",
+    }
+
+
+def compute_defensive_profile(defensive: pd.DataFrame, team: str) -> pd.DataFrame:
+    """Count observable defensive actions by type and source zone."""
+    focal = defensive[defensive["equipo"].eq(team)].copy()
+    if focal.empty:
+        return pd.DataFrame(columns=["action", "zone", "actions"])
+    return (
+        focal.assign(
+            action=focal["tipo_accion"].fillna("unknown"),
+            zone=focal["zona"].fillna("unknown"),
+        )
+        .groupby(["action", "zone"], as_index=False)
+        .size()
+        .rename(columns={"size": "actions"})
+    )
+
+
+def summarize_variability(match_metrics: pd.DataFrame) -> pd.DataFrame:
+    """Report sample size and dispersion so stage averages retain context."""
+    if match_metrics.empty:
+        return pd.DataFrame(
+            columns=["stage", "team", "matches", "metric", "mean", "std", "q1", "q3"]
+        )
+    metrics = [
+        "passes", "progressive_passes", "pressures", "recoveries",
+        "shots", "xg", "ppda",
+    ]
+    rows = []
+    for (stage, team), group in match_metrics.groupby(["stage", "team"]):
+        for metric in metrics:
+            values = pd.to_numeric(group[metric], errors="coerce").dropna()
+            rows.append({
+                "stage": stage,
+                "team": team,
+                "matches": int(values.size),
+                "metric": metric,
+                "mean": None if values.empty else float(values.mean()),
+                "std": None if values.size < 2 else float(values.std(ddof=1)),
+                "q1": None if values.empty else float(values.quantile(0.25)),
+                "q3": None if values.empty else float(values.quantile(0.75)),
+            })
+    return pd.DataFrame(rows)
+
+
 def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
     """Read the SQLite dataset and export match, stage, and action summaries."""
     output_path = Path(output_dir)
@@ -330,6 +421,59 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
         )
 
     match_metrics = pd.DataFrame(rows)
+    variability_summary = summarize_variability(match_metrics)
+    progression_rows = []
+    defensive_rows = []
+    territorial_rows = []
+    for match_id in match_metrics["match_id"]:
+        team = _team_for_match(match_id)
+        assert team is not None
+        match_passes = passes[passes["id_partido"].eq(match_id)]
+        match_defensive = defensive[defensive["id_partido"].eq(match_id)]
+        context_row = match_metrics.loc[
+            match_metrics["match_id"].eq(match_id)
+        ].iloc[0]
+        progression = compute_progression_profile(match_passes, team)
+        if not progression.empty:
+            progression.insert(0, "match_id", match_id)
+            progression.insert(1, "team", team)
+            progression.insert(2, "stage", context_row["stage"])
+            progression_rows.extend(progression.to_dict("records"))
+        defensive_profile = compute_defensive_profile(match_defensive, team)
+        if not defensive_profile.empty:
+            defensive_profile.insert(0, "match_id", match_id)
+            defensive_profile.insert(1, "team", team)
+            defensive_profile.insert(2, "stage", context_row["stage"])
+            defensive_rows.extend(defensive_profile.to_dict("records"))
+        territorial_rows.append(
+            {
+                "match_id": match_id,
+                "team": team,
+                "stage": context_row["stage"],
+                **compute_territorial_proxy(match_passes, team),
+            }
+        )
+    progression_summary = pd.DataFrame(progression_rows)
+    if progression_summary.empty:
+        progression_summary = pd.DataFrame(
+            columns=["match_id", "team", "stage", "zone", "lane",
+                     "passes", "progressive_passes", "key_passes"]
+        )
+    defensive_summary = pd.DataFrame(defensive_rows)
+    if defensive_summary.empty:
+        defensive_summary = pd.DataFrame(
+            columns=["match_id", "team", "stage", "action", "zone", "actions"]
+        )
+    territorial_summary = pd.DataFrame(territorial_rows)
+    if territorial_summary.empty:
+        territorial_summary = pd.DataFrame(
+            columns=["match_id", "team", "stage", "x_limit", "spatial_events",
+                     "team_events", "opponent_events", "proxy_share", "proxy_label"]
+        )
+    progression_summary.to_csv(output_path / "progression_summary.csv", index=False)
+    defensive_summary.to_csv(output_path / "defensive_summary.csv", index=False)
+    territorial_summary.to_csv(output_path / "territorial_proxy.csv", index=False)
+    variability_summary.to_csv(output_path / "variability_summary.csv", index=False)
     context = match_metrics[
         ["match_id", "team", "opponent", "venue", "stage"]
     ].copy()
@@ -926,6 +1070,10 @@ def run_pipeline(database: str | Path, output_dir: str | Path) -> pd.DataFrame:
         "formation_summary": _records(formation_summary),
         "transition_summary": _records(transition_summary),
         "decision_summary": _records(decision_summary),
+        "variability_summary": _records(variability_summary),
+        "progression_summary": _records(progression_summary),
+        "defensive_summary": _records(defensive_summary),
+        "territorial_proxy": _records(territorial_summary),
         "possession_summary": _records(possession_summary),
         "player_summary": _records(player_summary),
         "player_activity_map": _records(player_activity_map),

@@ -92,11 +92,15 @@ function fillSelect(selector, values, labels = {}) {
 }
 
 async function startDashboard() {
-  const [stages, matches, formations, decisions] = await Promise.all([
+  const [stages, matches, formations, decisions, variability, territorial, defensive, progression] = await Promise.all([
     loadCsv("stage_summary.csv"),
     loadCsv("match_metrics.csv"),
     loadCsv("formation_summary.csv"),
     loadCsv("decision_summary.csv"),
+    loadCsv("variability_summary.csv"),
+    loadCsv("territorial_proxy.csv"),
+    loadCsv("defensive_summary.csv"),
+    loadCsv("progression_summary.csv"),
   ]);
 
   fillSelect("#stage-filter", [...new Set(stages.map((row) => row.stage))], stageNames);
@@ -112,6 +116,10 @@ async function startDashboard() {
   updateStages();
   renderFormations(formations);
   renderDecisions(decisions);
+  renderVariability(variability);
+  renderTerritorial(territorial);
+  renderDefensive(defensive);
+  renderProgression(progression);
   renderMatches(matches, "all");
 }
 
@@ -129,6 +137,44 @@ function renderDecisions(rows) {
     { key: "substitution_events", label: "Sustituciones", render: (row) => formatNumber(row.substitution_events, 0) },
     { key: "formation_change_events", label: "Cambios de sistema", render: (row) => formatNumber(row.formation_change_events, 0) },
   ], rows, "No hay decisiones disponibles.");
+}
+
+function renderVariability(rows) {
+  renderTable("#variability-summary", [
+    { key: "stage", label: "Etapa", render: (row) => escapeHtml(stageNames[row.stage] || row.stage) },
+    { key: "metric", label: "Métrica" },
+    { key: "matches", label: "n", render: (row) => formatNumber(row.matches, 0) },
+    { key: "mean", label: "Media", render: (row) => formatNumber(row.mean, 2) },
+    { key: "std", label: "Desv.", render: (row) => formatNumber(row.std, 2) },
+  ], rows.slice(0, 30), "No hay variabilidad disponible.");
+}
+
+function renderTerritorial(rows) {
+  renderTable("#territorial-summary", [
+    { key: "stage", label: "Etapa", render: (row) => escapeHtml(stageNames[row.stage] || row.stage) },
+    { key: "team", label: "Equipo" },
+    { key: "spatial_events", label: "Eventos", render: (row) => formatNumber(row.spatial_events, 0) },
+    { key: "proxy_share", label: "Cuota", render: (row) => formatNumber(Number(row.proxy_share) * 100, 1) + "%" },
+  ], rows.slice(0, 30), "No hay proxy territorial disponible.");
+}
+
+function renderDefensive(rows) {
+  renderTable("#defensive-summary", [
+    { key: "stage", label: "Etapa", render: (row) => escapeHtml(stageNames[row.stage] || row.stage) },
+    { key: "action", label: "Acción" },
+    { key: "zone", label: "Zona" },
+    { key: "actions", label: "Acciones", render: (row) => formatNumber(row.actions, 0) },
+  ], rows.slice(0, 30), "No hay acciones defensivas disponibles.");
+}
+
+function renderProgression(rows) {
+  renderTable("#progression-summary", [
+    { key: "stage", label: "Etapa", render: (row) => escapeHtml(stageNames[row.stage] || row.stage) },
+    { key: "zone", label: "Zona" },
+    { key: "lane", label: "Carril" },
+    { key: "passes", label: "Pases", render: (row) => formatNumber(row.passes, 0) },
+    { key: "progressive_passes", label: "Progresivos", render: (row) => formatNumber(row.progressive_passes, 0) },
+  ], rows.slice(0, 30), "No hay progresión disponible.");
 }
 
 function renderMatches(rows, team) {

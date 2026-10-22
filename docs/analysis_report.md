@@ -43,3 +43,19 @@ PYTHONPATH=. python -m jardine_analysis.pipeline \
   cuántos partidos aparecen y `event_rows` cuántos registros aportan.
 - Los resultados son observacionales: no demuestran que una decisión causó un
   campeonato.
+- `variability_summary.csv` conserva `n`, media, desviación y cuantiles para
+  evitar conclusiones basadas solo en promedios.
+- `territorial_proxy.csv` usa eventos con `x_inicio >= 60`; es una
+  aproximación territorial y no Field Tilt oficial.
+- `progression_summary.csv` y `defensive_summary.csv` separan zona/carril y
+  tipo de acción, pero sus coordenadas siguen siendo crudas.
+
+## Reproducción de salidas ampliadas
+
+```bash
+PYTHONPATH=. python -m jardine_analysis.pipeline \
+  --database hackathon.db --output-dir outputs
+```
+
+La base `hackathon.db` no forma parte del repositorio y debe estar disponible
+localmente para regenerar los agregados completos.
