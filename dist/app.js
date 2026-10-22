@@ -3,14 +3,16 @@ import {
   filterTeamGoals,
   filterTeamSetPieces,
   formatFormation,
+  aggregatePlayerPassConnections,
+  uniquePlayers,
 } from "./ui-model.mjs";
 
 const stageNames = {
-  pre_america: "Antes del América",
-  america_championship_context: "América · etapa principal",
-  post_championship_context: "Después de los campeonatos",
-  other_context: "Otros contextos",
+  pre_america: "Pre-América",
+  america_championship_context: "América campeón",
+  post_championship_context: "Post campeonatos",
 };
+const stageKeys = Object.keys(stageNames);
 
 const formatNumber = (value, decimals = 1) => {
   if (value === null || value === undefined || value === "") return "Sin datos";
@@ -29,7 +31,7 @@ const escapeHtml = (value) =>
     .replaceAll("'", "&#039;");
 
 const stageLabel = (stage) => stageNames[stage]
-  || String(stage || "Sin etapa").replaceAll("_", " ");
+  || "Etapa no disponible";
 const metricNames = {
   passes: "Pases",
   progressive_passes: "Pases progresivos",
@@ -73,14 +75,6 @@ const positionNames = {
   "Right Wing": "Extremo derecho",
   "Right Wing Back": "Carrilero derecho",
 };
-const definitionNames = {
-  possession: "Posesión",
-  offensive_sequence: "Secuencia ofensiva",
-  pressure: "Presión",
-  ppda: "PPDA",
-  transition: "Transición",
-  set_piece: "Balón parado",
-};
 const actionNames = {
   "Ball Recovery": "Recuperación",
   Block: "Bloqueo",
@@ -106,7 +100,7 @@ const sortBy = (rows, key) => [...rows].sort((a, b) =>
 );
 const matchesScope = (row, team, stage) =>
   (team === "all" || row.team === team)
-  && (stage === "all" || row.stage === stage);
+  && (stage === "all" ? stageKeys.includes(row.stage) : row.stage === stage);
 
 function renderTable(containerId, columns, rows, emptyMessage) {
   const container = document.querySelector(containerId);
@@ -274,7 +268,7 @@ function renderTerritorial(rows, team, stage) {
     <div class="territory-card">
       <div><span class="panel-label">${escapeHtml(stageLabel(row.stage))}</span><strong>${formatNumber(Number(row.proxy_share) * 100, 1)}%</strong></div>
       <div class="bar-track"><span style="width:${Math.min(100, Number(row.proxy_share) * 100)}%"></span></div>
-      <small>${formatNumber(row.events, 0)} eventos espaciales · ${formatNumber(row.matches, 0)} partidos</small>
+      <small>Promedio por partido · ${formatNumber(row.events, 0)} pases en la zona · ${formatNumber(row.matches, 0)} partidos</small>
     </div>
   `).join("");
 }
@@ -341,7 +335,7 @@ function renderMatches(rows, team, stage) {
     { key: "high_recoveries", label: "Rec. altas", render: (row) => formatNumber(row.high_recoveries, 0) },
     { key: "xg", label: "xG", render: (row) => formatNumber(row.xg, 2) },
     { key: "ppda", label: "PPDA", render: (row) => formatNumber(row.ppda, 2) },
-  ], visible.slice(0, 40), "No hay partidos disponibles.");
+  ], visible, "No hay partidos disponibles.");
 }
 
 function renderContext(rows, team, stage) {
@@ -403,27 +397,31 @@ function renderPossessions(rows, team, stage) {
     container.innerHTML = '<p class="empty">No hay resumen de posesiones disponible.</p>';
     return;
   }
-  container.innerHTML = visible.map((row) => `
-    <div class="possession-card">
-      <span class="panel-label">${escapeHtml(stageLabel(row.stage))}</span>
-      <strong class="possession-total">${formatNumber(row.possessions, 0)}</strong>
-      <small>posesiones registradas</small>
-      <div class="possession-metrics">
-        <div><b>${formatNumber(row.average_duration_seconds, 1)}s</b><span>duración</span></div>
-        <div><b>${formatNumber(row.average_passes, 1)}</b><span>pases</span></div>
-        <div><b>${formatNumber(row.average_carries, 1)}</b><span>conducciones</span></div>
-        <div><b>${formatNumber(row.shots, 0)}</b><span>tiros</span></div>
+  container.innerHTML = `
+    <div class="possession-grid">
+      ${visible.map((row) => `
+        <div class="possession-card">
+          <span class="panel-label">${escapeHtml(stageLabel(row.stage))}</span>
+          <strong class="possession-total">${formatNumber(row.possessions, 0)}</strong>
+          <small>posesiones registradas</small>
+          <div class="possession-metrics">
+            <div><b>${formatNumber(row.average_duration_seconds, 1)} s</b><span>duración media</span></div>
+            <div><b>${formatNumber(row.average_passes, 1)}</b><span>pases por posesión</span></div>
+            <div><b>${formatNumber(row.average_carries, 1)}</b><span>conducciones</span></div>
+            <div><b>${formatNumber(row.shots, 0)}</b><span>tiros totales</span></div>
+          </div>
+        </div>
+      `).join("")}
       </div>
-    </div>
-  `).join("");
+  `;
 }
 
 function renderPlayerSelect(report, team, stage) {
   const select = document.querySelector("#player-filter");
   const previous = select.value;
   select.replaceChildren(new Option("Todos", "all"));
-  const players = report.player_summary
-    .filter((row) => matchesScope(row, team, stage))
+  const players = uniquePlayers(report.player_summary
+    .filter((row) => matchesScope(row, team, stage)))
     .sort((a, b) => a.player.localeCompare(b.player, "es"));
   players.forEach((player) => {
     const position = positionNames[player.position] || "Posición no disponible";
@@ -431,6 +429,115 @@ function renderPlayerSelect(report, team, stage) {
     select.append(option);
   });
   select.value = players.some((player) => player.player_id === previous) ? previous : "all";
+}
+
+function enableSvgNavigation(svg, controls) {
+  const bounds = svg.viewBox.baseVal;
+  const original = {
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: bounds.height,
+  };
+  const view = { ...original };
+  const minWidth = original.width / 5;
+  const maxWidth = original.width;
+  const applyView = () => {
+    svg.setAttribute("viewBox", `${view.x} ${view.y} ${view.width} ${view.height}`);
+  };
+  const zoomAt = (factor, anchorX = 0.5, anchorY = 0.5) => {
+    const nextWidth = Math.max(minWidth, Math.min(maxWidth, view.width * factor));
+    const scale = nextWidth / view.width;
+    const nextHeight = view.height * scale;
+    const pointX = view.x + view.width * anchorX;
+    const pointY = view.y + view.height * anchorY;
+    view.x = pointX - nextWidth * anchorX;
+    view.y = pointY - nextHeight * anchorY;
+    view.width = nextWidth;
+    view.height = nextHeight;
+    applyView();
+  };
+
+  svg.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    zoomAt(
+      event.deltaY < 0 ? 0.85 : 1 / 0.85,
+      Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
+      Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height)),
+    );
+  }, { passive: false });
+
+  svg.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    zoomAt(0.7);
+  });
+
+  let drag;
+  svg.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const bounds = svg.getBoundingClientRect();
+    drag = {
+      pointerId: event.pointerId,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      viewX: view.x,
+      viewY: view.y,
+      width: view.width,
+      height: view.height,
+      bounds,
+    };
+    svg.setPointerCapture(event.pointerId);
+  });
+  svg.addEventListener("pointermove", (event) => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    view.x = drag.viewX - (event.clientX - drag.clientX) * drag.width / drag.bounds.width;
+    view.y = drag.viewY - (event.clientY - drag.clientY) * drag.height / drag.bounds.height;
+    applyView();
+  });
+  const finishDrag = (event) => {
+    if (drag?.pointerId === event.pointerId) drag = undefined;
+  };
+  svg.addEventListener("pointerup", finishDrag);
+  svg.addEventListener("pointercancel", finishDrag);
+
+  svg.addEventListener("keydown", (event) => {
+    const panX = view.width * 0.1;
+    const panY = view.height * 0.1;
+    if (event.key === "+" || event.key === "=") zoomAt(0.8);
+    else if (event.key === "-") zoomAt(1.25);
+    else if (event.key === "ArrowLeft") view.x -= panX;
+    else if (event.key === "ArrowRight") view.x += panX;
+    else if (event.key === "ArrowUp") view.y -= panY;
+    else if (event.key === "ArrowDown") view.y += panY;
+    else if (event.key === "Home") {
+      view.x = original.x;
+      view.y = original.y;
+      view.width = original.width;
+      view.height = original.height;
+    } else return;
+    event.preventDefault();
+    applyView();
+  });
+
+  controls.querySelector("[data-zoom-in]").addEventListener("click", () => zoomAt(0.8));
+  controls.querySelector("[data-zoom-out]").addEventListener("click", () => zoomAt(1.25));
+  controls.querySelector("[data-zoom-reset]").addEventListener("click", () => {
+    view.x = original.x;
+    view.y = original.y;
+    view.width = original.width;
+    view.height = original.height;
+    applyView();
+  });
+}
+
+function zoomControls(label) {
+  return `<div class="map-controls" role="group" aria-label="${escapeHtml(label)}">
+    <button type="button" data-zoom-in aria-label="Acercar" title="Acercar">+</button>
+    <button type="button" data-zoom-out aria-label="Alejar" title="Alejar">−</button>
+    <button type="button" data-zoom-reset aria-label="Restablecer vista" title="Restablecer">↺</button>
+  </div>`;
 }
 
 function renderPlayerViews(report, team, stage, playerId) {
@@ -466,10 +573,13 @@ function renderPlayerViews(report, team, stage, playerId) {
     `;
   }
 
-  const selected = report.player_summary.find((row) => row.player_id === playerId);
-  const playerName = selected?.player;
   const scopedNetwork = report.pass_network
-    .filter((row) => matchesScope(row, team, stage))
+    .filter((row) => matchesScope(row, team, stage));
+  const selectedRows = report.player_summary.filter((row) =>
+    row.player_id === playerId && matchesScope(row, team, stage)
+  );
+  const playerName = selectedRows[0]?.player;
+  const playerMatches = selectedRows.reduce((sum, row) => sum + Number(row.matches || 0), 0);
   let centerName = playerName;
   if (!centerName && scopedNetwork.length) {
     const weights = new Map();
@@ -479,50 +589,72 @@ function renderPlayerViews(report, team, stage, playerId) {
     });
     centerName = [...weights.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   }
-  const connections = new Map();
-  scopedNetwork.forEach((row) => {
-    if (row.player === centerName && row.receiver !== centerName) {
-      const edge = connections.get(row.receiver) || { name: row.receiver, passes: 0, direction: "sale" };
-      edge.passes += Number(row.passes);
-      connections.set(row.receiver, edge);
-    }
-    if (row.receiver === centerName && row.player !== centerName) {
-      const edge = connections.get(row.player) || { name: row.player, passes: 0, direction: "llega" };
-      edge.passes += Number(row.passes);
-      edge.direction = edge.direction === "sale" ? "ambas" : edge.direction;
-      connections.set(row.player, edge);
-    }
-  });
-  const nearby = [...connections.values()].sort((a, b) => b.passes - a.passes).slice(0, 10);
+  const centerMatches = playerMatches || report.player_summary
+    .filter((row) => row.player === centerName && matchesScope(row, team, stage))
+    .reduce((sum, row) => sum + Number(row.matches || 0), 0);
+  const nearby = aggregatePlayerPassConnections(scopedNetwork, centerName)
+    .sort((a, b) => (b.outgoing + b.incoming) - (a.outgoing + a.incoming))
+    .slice(0, 10);
   const networkContainer = document.querySelector("#player-pass-network");
   if (!nearby.length) {
     networkContainer.innerHTML = '<p class="empty">No hay conexiones de pase para esta selección.</p>';
   } else {
-    const center = { x: 260, y: 150 };
-    const maxPasses = Math.max(...nearby.map((edge) => edge.passes));
+    const center = { x: 120, y: 180 };
+    const maxPasses = Math.max(...nearby.map((edge) => edge.outgoing + edge.incoming));
     const nodes = nearby.map((edge, index) => {
-      const angle = -Math.PI / 2 + (index / nearby.length) * Math.PI * 2;
-      return { ...edge, x: center.x + Math.cos(angle) * 174, y: center.y + Math.sin(angle) * 105 };
+      const spacing = nearby.length > 1 ? 312 / (nearby.length - 1) : 0;
+      return { ...edge, x: 360, y: 24 + index * spacing };
     });
-    const links = nodes.map((node) => `
-      <line x1="${center.x}" y1="${center.y}" x2="${node.x}" y2="${node.y}"
-        class="network-link" stroke-width="${1 + node.passes / maxPasses * 5}">
-        <title>${escapeHtml(node.direction)}: ${formatNumber(node.passes, 0)} pases</title>
-      </line>
-    `).join("");
+    const links = nodes.map((node) => {
+      const directions = [
+        { passes: node.outgoing, fromPlayer: true },
+        { passes: node.incoming, fromPlayer: false },
+      ].filter((direction) => direction.passes > 0);
+      return directions.map((direction) => {
+        const start = direction.fromPlayer ? center : node;
+        const end = direction.fromPlayer ? node : center;
+        const offset = directions.length > 1 ? 11 : 0;
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const length = Math.hypot(dx, dy) || 1;
+        const controlX = (start.x + end.x) / 2 - (dy / length) * offset;
+        const controlY = (start.y + end.y) / 2 + (dx / length) * offset;
+        const average = centerMatches ? direction.passes / centerMatches : null;
+        const directionLabel = direction.fromPlayer ? "Pases hacia" : "Pases recibidos de";
+        const tooltip = `${directionLabel} ${node.name}: ${formatNumber(direction.passes, 0)} pases`
+          + `${centerMatches ? ` en ${formatNumber(centerMatches, 0)} partidos del jugador (${formatNumber(average, 1)} por partido)` : ""}`;
+        return `<path d="M ${start.x} ${start.y} Q ${controlX} ${controlY} ${end.x} ${end.y}"
+          class="network-link" stroke-width="${1 + direction.passes / maxPasses * 5}"
+          marker-end="url(#network-arrowhead)"><title>${escapeHtml(tooltip)}</title></path>`;
+      }).join("");
+    }).join("");
     const nodeMarkup = nodes.map((node) => `
       <g class="network-node">
-        <circle cx="${node.x}" cy="${node.y}" r="${5 + node.passes / maxPasses * 3}"></circle>
-        <text x="${node.x}" y="${node.y + 19}" text-anchor="middle">${escapeHtml(node.name.split(" ").slice(-1)[0])}</text>
+        <circle cx="${node.x}" cy="${node.y}" r="${5 + (node.outgoing + node.incoming) / maxPasses * 3}">
+          <title>${escapeHtml(node.name)} · hacia: ${formatNumber(node.outgoing, 0)} · desde: ${formatNumber(node.incoming, 0)}</title>
+        </circle>
+        <text x="${node.x + 20}" y="${node.y + 4}" text-anchor="start">${escapeHtml(node.name)}</text>
       </g>
     `).join("");
     networkContainer.innerHTML = `
-      <svg class="network-svg" viewBox="0 0 520 300" role="img" aria-label="Conexiones de pase de ${escapeHtml(centerName)}">
-        <g>${links}</g><g>${nodeMarkup}</g>
-        <g class="network-center"><circle cx="${center.x}" cy="${center.y}" r="31"></circle><text x="${center.x}" y="${center.y + 4}" text-anchor="middle">${escapeHtml(centerName.split(" ").slice(-1)[0])}</text></g>
-      </svg>
-      <p class="map-caption">10 conexiones principales · grosor proporcional a los pases registrados</p>
+      <div class="interactive-map-wrap">
+        ${zoomControls("Controles de la red de pases")}
+        <svg class="network-svg interactive-map" viewBox="0 0 760 360" role="img" aria-label="Conexiones de pase de ${escapeHtml(centerName)}" tabindex="0">
+          <defs>
+            <marker id="network-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="network-arrowhead"></path>
+            </marker>
+          </defs>
+          <g>${links}</g><g>${nodeMarkup}</g>
+          <g class="network-center">
+            <circle cx="${center.x}" cy="${center.y}" r="31"></circle>
+            <text x="${center.x}" y="${center.y + 4}" text-anchor="middle">Jugador</text>
+            <text class="network-center-name" x="${center.x}" y="${center.y + 55}" text-anchor="middle">${escapeHtml(centerName)}</text>
+          </g>
+        </svg>
+      </div>
     `;
+    enableSvgNavigation(networkContainer.querySelector(".network-svg"), networkContainer);
   }
 }
 
@@ -539,27 +671,26 @@ function renderTeamGoals(rows, team, stage) {
     return `<circle cx="${x}" cy="${y}" r="1.45" aria-label="${escapeHtml(row.shooting_team)} · ${escapeHtml(row.player || "rematador")}" />`;
   }).join("");
   container.innerHTML = `
-    <svg class="pitch shot-pitch" viewBox="0 0 120 80" role="img" aria-label="${goals.length} goles del equipo en coordenadas StatsBomb">
-      <rect x="1" y="1" width="118" height="78" rx="2" class="pitch-surface" />
-      <path d="M60 1v78 M1 20h18v40H1 M119 20h-18v40h18 M19 29h8v22h-8 M101 29h-8v22h8" class="pitch-lines" />
-      <circle cx="60" cy="40" r="12" class="pitch-lines" />
-      <g class="goal-points">${points}</g>
-    </svg>
-    <p class="map-caption">${formatNumber(goals.length, 0)} goles · equipo completo · sin filtro de jugador</p>
+    <div class="interactive-map-wrap">
+      ${zoomControls("Controles del mapa de goles")}
+      <svg class="pitch shot-pitch interactive-map" viewBox="0 0 120 80" role="img" aria-label="${goals.length} goles del equipo en coordenadas StatsBomb" tabindex="0">
+        <rect x="1" y="1" width="118" height="78" rx="2" class="pitch-surface" />
+        <path d="M60 1v78 M1 20h18v40H1 M119 20h-18v40h18 M19 29h8v22h-8 M101 29h-8v22h8" class="pitch-lines" />
+        <circle cx="60" cy="40" r="12" class="pitch-lines" />
+        <g class="goal-points">${points}</g>
+      </svg>
+    </div>
+    <p class="map-caption">${formatNumber(goals.length, 0)} goles · equipo completo · usa los controles, la rueda o doble clic para acercar y arrastra para mover</p>
   `;
+  enableSvgNavigation(container.querySelector(".shot-pitch"), container);
 }
 
-function renderMetadata(metadata) {
-  const limitations = document.querySelector("#report-limitations");
-  const definitions = document.querySelector("#metric-definitions");
-  limitations.innerHTML = `
-    <li class="scope-sample"><strong>${formatNumber(metadata.match_count, 0)} partidos</strong><span>en la muestra analizada</span></li>
-    ${(metadata.limitations || []).map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
-  `;
-  definitions.innerHTML = Object.entries(metadata.definitions || {})
-    .map(([term, definition]) =>
-      `<div><dt>${escapeHtml(definitionNames[term] || term.replaceAll("_", " "))}</dt><dd>${escapeHtml(definition)}</dd></div>`
-    ).join("");
+function renderMetadata(matches = []) {
+  const container = document.querySelector("#scope-description");
+  const count = matches.filter((row) => stageKeys.includes(row.stage)).length;
+  container.innerHTML =
+    `<strong>${formatNumber(count, 0)} partidos.</strong> Comparación en tres etapas: Pre-América, América campeón y post campeonatos.`;
+  container.classList.remove("loading");
 }
 
 function renderSetPieces(rows, team, stage) {
@@ -576,6 +707,7 @@ function renderSetPieces(rows, team, stage) {
 function renderDashboard(report) {
   const stage = document.querySelector("#stage-filter").value;
   const team = document.querySelector("#team-filter").value;
+  renderMetadata(report.matches);
   renderPlayerSelect(report, team, stage);
   const playerId = document.querySelector("#player-filter").value;
 
@@ -594,7 +726,6 @@ function renderDashboard(report) {
   renderPlayerViews(report, team, stage, playerId);
   renderTeamGoals(report.shot_map, team, stage);
   renderSetPieces(report.set_piece_summary, team, stage);
-  renderMetadata(report.metadata || {});
 }
 
 async function startDashboard() {
@@ -602,7 +733,7 @@ async function startDashboard() {
   if (!response.ok) throw new Error("No se pudo cargar el reporte actualizado.");
   const report = await response.json();
 
-  fillSelect("#stage-filter", [...new Set(report.stage_summary.map((row) => row.stage))], stageNames);
+  fillSelect("#stage-filter", stageKeys, stageNames);
   fillSelect("#team-filter", [...new Set(report.matches.map((row) => row.team))].sort());
 
   ["#stage-filter", "#team-filter", "#player-filter"].forEach((selector) => {

@@ -10,7 +10,7 @@
 <body>
   <header class="hero-wrap">
     <div class="hero-content">
-      <p class="eyebrow">Informe táctico · 183 partidos · Datos StatsBomb</p>
+      <p class="eyebrow">Informe táctico · 3 etapas · Datos StatsBomb</p>
       <h1>La evolución<br>de <em>Jardine.</em></h1>
       <p class="hero-copy">
         Una lectura longitudinal de las estructuras, los patrones de juego y
@@ -54,15 +54,11 @@
     <section id="alcance" class="report-section scope-section">
       <div class="section-title-row">
         <div>
-          <p class="section-kicker">01 · ALCANCE Y MÉTODO</p>
+          <p class="section-kicker">01 · ALCANCE</p>
           <h2>Qué pueden decir<br>estos datos.</h2>
-          <p class="section-lede">Una guía breve para interpretar las métricas, la muestra y sus límites antes de explorar el informe.</p>
+          <p id="scope-description" class="section-lede loading">Cargando alcance...</p>
         </div>
-        <span class="section-index">MÉTODO · DEFINICIONES · LÍMITES</span>
-      </div>
-      <div class="scope-content">
-        <ul id="report-limitations" class="scope-limitations"></ul>
-        <dl id="metric-definitions" class="definition-list"></dl>
+        <span class="section-index">3 ETAPAS · ANÁLISIS LONGITUDINAL</span>
       </div>
     </section>
 
@@ -147,7 +143,7 @@
         <span class="callout-icon" aria-hidden="true">↗</span>
         <div>
           <span class="panel-label">TERRITORIO · PROXY</span>
-          <p>Estimación espacial construida con los eventos disponibles; <strong>no es Field Tilt oficial</strong> y no infiere la dirección del ataque.</p>
+          <p>Compara qué proporción de los pases que empiezan en <strong>x ≥ 60</strong> corresponde a cada equipo; el resumen promedia esa proporción entre partidos. Sirve para observar dónde se concentra la circulación, sin asumir hacia qué portería atacan los equipos.</p>
           <div id="territorial-summary" class="table-wrap">
             <p class="loading">Cargando proxy territorial...</p>
           </div>
@@ -187,6 +183,7 @@
           <div class="panel-heading">
             <div><span class="panel-label">POSESIONES</span><h3>Ritmo y secuencias</h3></div>
           </div>
+          <img class="context-illustration" src="assets/possession-rhythm.svg" alt="" aria-hidden="true">
           <div id="possession-summary" class="table-wrap">
             <p class="loading">Cargando posesiones...</p>
           </div>
@@ -194,7 +191,8 @@
         <article class="metric-spotlight context-spotlight">
           <span class="panel-label">EVIDENCIA PARTIDO A PARTIDO</span>
           <h3>Una muestra, no una anécdota.</h3>
-          <p>Consulta métricas de cada partido. La tabla muestra hasta 40 encuentros; usa los filtros superiores para acotar la selección.</p>
+          <img class="context-illustration" src="assets/match-evidence.svg" alt="" aria-hidden="true">
+          <p>Consulta las métricas de todos los partidos de la etapa seleccionada y compáralos con los filtros del informe.</p>
         </article>
       </div>
       <div class="opponent-panel">
@@ -236,6 +234,7 @@
           <div id="player-pass-network" class="table-wrap">
             <p class="loading">Cargando red de pases...</p>
           </div>
+          <p class="map-caption">Las flechas indican quién pasa a quién; el grosor compara el volumen acumulado. Pasa el cursor sobre una flecha para ver conteo y promedio por partido.</p>
         </article>
       </div>
     </section>

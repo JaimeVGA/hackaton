@@ -1,4 +1,5 @@
 stage,team,substitution_events,matches_with_substitution,average_substitution_minute,formation_change_events,matches_with_formation_change
-america_championship_context,América,318,70,71.08176100628931,46,38
-post_championship_context,América,281,58,69.07829181494662,46,39
-pre_america,Atlético San Luis,233,55,71.79399141630901,37,31
+america_championship_context,América,318,70,71.08176100628931,46.0,38.0
+other_context,Atlético San Luis,7,2,76.71428571428571,0.0,0.0
+post_championship_context,América,281,58,69.07829181494662,46.0,39.0
+pre_america,Atlético San Luis,226,53,71.64159292035399,37.0,31.0

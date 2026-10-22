@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img">
+  <rect width="720" height="180" rx="8" fill="#20352b"/>
+  <path d="M66 91h588" fill="none" stroke="#d8f06b" stroke-opacity=".5" stroke-width="3"/>
+  <g fill="#15211d" stroke="#d8f06b" stroke-width="3">
+    <circle cx="92" cy="91" r="28"/>
+    <circle cx="226" cy="91" r="28"/>
+    <circle cx="360" cy="91" r="28"/>
+    <circle cx="494" cy="91" r="28"/>
+    <circle cx="628" cy="91" r="28"/>
+  </g>
+  <g fill="#d8f06b" font-family="Georgia,serif" font-size="18" text-anchor="middle">
+    <text x="92" y="97">01</text>
+    <text x="226" y="97">02</text>
+    <text x="360" y="97">03</text>
+    <text x="494" y="97">04</text>
+    <text x="628" y="97">05</text>
+  </g>
+  <g fill="#f5f4ec" font-family="Arial,sans-serif" font-size="12" text-anchor="middle" letter-spacing="1">
+    <text x="92" y="143">PARTIDO</text>
+    <text x="226" y="143">PARTIDO</text>
+    <text x="360" y="143">PARTIDO</text>
+    <text x="494" y="143">PARTIDO</text>
+    <text x="628" y="143">PARTIDO</text>
+  </g>
+</svg>
