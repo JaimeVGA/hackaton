@@ -3,146 +3,290 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15211d">
   <title>La evolución de Jardine</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="page-shell">
-    <header class="hero">
-      <p class="eyebrow">Análisis táctico · Datos StatsBomb</p>
-      <h1>La evolución de Jardine</h1>
-      <p class="intro">
-        Una vista sencilla de cómo cambiaron la estructura, la presión,
-        la progresión y las transiciones de sus equipos.
+  <header class="hero-wrap">
+    <div class="hero-content">
+      <p class="eyebrow">Informe táctico · 183 partidos · Datos StatsBomb</p>
+      <h1>La evolución<br>de <em>Jardine.</em></h1>
+      <p class="hero-copy">
+        Una lectura longitudinal de las estructuras, los patrones de juego y
+        las decisiones observables a lo largo de distintas etapas.
       </p>
-      <p class="note">
-        Los datos son observacionales: muestran patrones asociados, no prueban
-        por sí solos la causa de los campeonatos.
-      </p>
-    </header>
+      <a class="hero-link" href="#panorama">Explorar el informe <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="hero-mark" aria-hidden="true">
+      <span>AJ</span>
+      <i class="mark-orbit"></i><i class="mark-orbit orbit-two"></i><i class="mark-orbit orbit-three"></i>
+    </div>
+  </header>
 
-    <section class="section">
-      <div class="section-heading">
+  <nav class="report-nav" aria-label="Secciones del informe">
+    <a href="#alcance">ALCANCE</a>
+    <a href="#panorama">PANORAMA</a>
+    <a href="#identidad">IDENTIDAD</a>
+    <a href="#contexto">CONTEXTO</a>
+    <a href="#jugadores">JUGADORES</a>
+    <a href="#balon-parado">BALÓN PARADO</a>
+  </nav>
+
+  <section class="filter-strip" aria-label="Filtros del informe">
+    <div class="filter-intro">
+      <span class="eyebrow">Explora la muestra</span>
+      <span>Filtra las vistas por etapa y equipo.</span>
+    </div>
+    <label for="stage-filter">Etapa
+      <select id="stage-filter"><option value="all">Todas las etapas</option></select>
+    </label>
+    <label for="team-filter">Equipo
+      <select id="team-filter"><option value="all">Todos los equipos</option></select>
+    </label>
+  </section>
+  <div class="sample-note">
+    <span class="sample-dot"></span>
+    <span>Lectura descriptiva: las asociaciones observadas no demuestran intención ni causalidad.</span>
+  </div>
+
+  <main>
+    <section id="alcance" class="report-section scope-section">
+      <div class="section-title-row">
         <div>
-          <p class="eyebrow">Panorama</p>
-          <h2>Comparación por etapa</h2>
+          <p class="section-kicker">01 · ALCANCE Y MÉTODO</p>
+          <h2>Qué pueden decir<br>estos datos.</h2>
+          <p class="section-lede">Una guía breve para interpretar las métricas, la muestra y sus límites antes de explorar el informe.</p>
         </div>
-        <label class="select-label" for="stage-filter">
-          Mostrar etapa
-          <select id="stage-filter">
-            <option value="all">Todas</option>
-          </select>
-        </label>
+        <span class="section-index">MÉTODO · DEFINICIONES · LÍMITES</span>
+      </div>
+      <div class="scope-content">
+        <ul id="report-limitations" class="scope-limitations"></ul>
+        <dl id="metric-definitions" class="definition-list"></dl>
+      </div>
+    </section>
+
+    <section id="panorama" class="report-section section-light">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">02 · PANORAMA</p>
+          <h2>El contexto<br>de cada etapa.</h2>
+          <p class="section-lede">Promedios por partido para comparar el volumen y el perfil general del juego.</p>
+        </div>
+        <span class="section-index">MUESTRA · POR ETAPA</span>
       </div>
       <div id="stage-summary" class="stage-grid" aria-live="polite">
         <p class="loading">Cargando resumen...</p>
       </div>
     </section>
 
-    <section class="section two-columns">
-      <article class="panel">
-        <p class="eyebrow">Estructura</p>
-        <h2>Formaciones iniciales</h2>
-        <div id="formation-summary" class="table-wrap">
-          <p class="loading">Cargando formaciones...</p>
-        </div>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Decisiones observables</p>
-        <h2>Ajustes durante el partido</h2>
-        <div id="decision-summary" class="table-wrap">
-          <p class="loading">Cargando decisiones...</p>
-        </div>
-      </article>
-    </section>
-
-    <section class="section two-columns">
-      <article class="panel">
-        <p class="eyebrow">Construcción colectiva</p>
-        <h2>Pases y actividad espacial del equipo</h2>
-        <p class="note">Resumen colectivo por partido, etapa y zona. No son estadísticas individuales.</p>
-        <div id="pass-summary" class="table-wrap">
-          <p class="loading">Cargando pases...</p>
-        </div>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Finalización</p>
-        <h2>Mapa de tiros</h2>
-        <p class="note">Remates y xG del equipo; separado de pases y actividad espacial.</p>
-        <div id="shot-summary" class="table-wrap">
-          <p class="loading">Cargando tiros...</p>
-        </div>
-      </article>
-    </section>
-
-    <section class="section panel">
-      <p class="eyebrow">Balón parado</p>
-      <h2>Acciones asociadas a reanudaciones</h2>
-      <p class="note">Córners, tiros libres y saques de banda. No se mezclan con el mapa de tiros.</p>
-      <div id="set-piece-summary" class="table-wrap">
-        <p class="loading">Cargando balón parado...</p>
-      </div>
-    </section>
-
-    <section class="section panel">
-      <div class="section-heading">
+    <section id="identidad" class="report-section section-ink">
+      <div class="section-title-row">
         <div>
-          <p class="eyebrow">Evidencia partido a partido</p>
-          <h2>Partidos analizados</h2>
+          <p class="section-kicker">03 · IDENTIDAD DE JUEGO</p>
+          <h2>Estructura,<br>progresión y presión.</h2>
+          <p class="section-lede">Formaciones y patrones observables en la circulación, la recuperación y las transiciones.</p>
         </div>
-        <label class="select-label" for="team-filter">
-          Equipo
-          <select id="team-filter">
-            <option value="all">Todos</option>
-          </select>
+        <span class="section-index">ATAQUE · DEFENSA · TRANSICIÓN</span>
+      </div>
+      <div class="identity-grid">
+        <article class="chart-panel chart-panel-dark">
+          <div class="panel-heading">
+            <div><span class="panel-label">AVANCE CON BALÓN</span><h3>Progresión por zona y carril</h3></div>
+            <span class="chart-unit">Pases observados</span>
+          </div>
+          <div id="progression-summary" class="table-wrap">
+            <p class="loading">Cargando progresión...</p>
+          </div>
+        </article>
+        <article class="metric-spotlight">
+          <span class="panel-label">PATRONES POR PARTIDO</span>
+          <h3>Consistencia entre partidos</h3>
+          <p class="variability-note">La barra muestra el rango central; la marca señala el promedio. Se indica cuando la muestra es pequeña.</p>
+          <div id="variability-summary" class="table-wrap">
+            <p class="loading">Cargando variabilidad...</p>
+          </div>
+        </article>
+      </div>
+      <div class="identity-grid lower-visuals">
+        <article class="chart-panel chart-panel-paper">
+          <div class="panel-heading">
+            <div><span class="panel-label">SIN BALÓN</span><h3>Acciones defensivas observadas</h3></div>
+            <span class="chart-unit">Acciones por zona</span>
+          </div>
+          <div id="defensive-summary" class="table-wrap">
+            <p class="loading">Cargando defensa...</p>
+          </div>
+        </article>
+        <article class="chart-panel chart-panel-dark">
+          <div class="panel-heading">
+            <div><span class="panel-label">SECUENCIAS RÁPIDAS</span><h3>Después de recuperar</h3></div>
+            <span class="chart-unit">Transiciones registradas</span>
+          </div>
+          <div id="transition-summary" class="table-wrap">
+            <p class="loading">Cargando transiciones...</p>
+          </div>
+        </article>
+      </div>
+      <div class="formation-row">
+        <div>
+          <span class="panel-label">ESTRUCTURA Y AJUSTES</span>
+          <h3>El dibujo inicial y sus cambios.</h3>
+          <p>Las formaciones se presentan con guiones. Los cambios de sistema y sustituciones son eventos registrados, no una interpretación de la intención del cuerpo técnico.</p>
+        </div>
+        <div class="formation-tables">
+          <div id="formation-summary" class="table-wrap">
+            <p class="loading">Cargando formaciones...</p>
+          </div>
+          <div id="decision-summary" class="table-wrap decision-table">
+            <p class="loading">Cargando decisiones...</p>
+          </div>
+        </div>
+      </div>
+      <div class="transition-callout">
+        <span class="callout-icon" aria-hidden="true">↗</span>
+        <div>
+          <span class="panel-label">TERRITORIO · PROXY</span>
+          <p>Estimación espacial construida con los eventos disponibles; <strong>no es Field Tilt oficial</strong> y no infiere la dirección del ataque.</p>
+          <div id="territorial-summary" class="table-wrap">
+            <p class="loading">Cargando proxy territorial...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contexto" class="report-section section-light">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">04 · CONTEXTO Y CONSISTENCIA</p>
+          <h2>El juego también<br>depende del momento.</h2>
+          <p class="section-lede">Marcador, localía y rival ofrecen contexto; no son explicaciones causales del rendimiento.</p>
+        </div>
+        <span class="section-index">MUESTRA · RESULTADOS · ENTORNO</span>
+      </div>
+      <div class="context-grid">
+        <article class="chart-panel chart-panel-paper">
+          <div class="panel-heading">
+            <div><span class="panel-label">ESTADO DEL MARCADOR</span><h3>Rendimiento según el partido</h3></div>
+          </div>
+          <div id="context-summary" class="table-wrap">
+            <p class="loading">Cargando contexto...</p>
+          </div>
+        </article>
+        <article class="chart-panel chart-panel-paper">
+          <div class="panel-heading">
+            <div><span class="panel-label">LOCALÍA Y OPONENTES</span><h3>Entorno competitivo</h3></div>
+          </div>
+          <div id="venue-summary" class="table-wrap">
+            <p class="loading">Cargando localía...</p>
+          </div>
+        </article>
+      </div>
+      <div class="context-grid lower-visuals">
+        <article class="chart-panel chart-panel-paper">
+          <div class="panel-heading">
+            <div><span class="panel-label">POSESIONES</span><h3>Ritmo y secuencias</h3></div>
+          </div>
+          <div id="possession-summary" class="table-wrap">
+            <p class="loading">Cargando posesiones...</p>
+          </div>
+        </article>
+        <article class="metric-spotlight context-spotlight">
+          <span class="panel-label">EVIDENCIA PARTIDO A PARTIDO</span>
+          <h3>Una muestra, no una anécdota.</h3>
+          <p>Consulta métricas de cada partido. La tabla muestra hasta 40 encuentros; usa los filtros superiores para acotar la selección.</p>
+        </article>
+      </div>
+      <div class="opponent-panel">
+        <div>
+          <span class="panel-label">PARTIDOS ANALIZADOS</span>
+          <h3>La evidencia detrás de los promedios.</h3>
+          <p>Valores por encuentro y etapa; usa los filtros superiores para acotar la consulta.</p>
+        </div>
+        <div id="match-table" class="table-wrap opponent-table">
+          <p class="loading">Cargando partidos...</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="jugadores" class="report-section section-lime">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">05 · LECTURA INDIVIDUAL</p>
+          <h2>El aporte<br>en el colectivo.</h2>
+          <p class="section-lede">Explora la actividad y las conexiones de pase del jugador seleccionado.</p>
+        </div>
+        <span class="section-index">ACTIVIDAD · CONEXIONES</span>
+      </div>
+      <div class="player-select-row">
+        <label for="player-filter">Seleccionar jugador
+          <select id="player-filter"><option value="all">Todos los jugadores</option></select>
         </label>
+        <p class="player-kpis-note">El selector de jugador solo afecta el mapa de actividad y la red de pases. Las vistas colectivas de goles y balón parado son independientes.</p>
       </div>
-      <div id="match-table" class="table-wrap">
-        <p class="loading">Cargando partidos...</p>
+      <div class="player-visual-grid">
+        <article class="visual-card">
+          <span class="panel-label">ZONAS DE ACTIVIDAD</span>
+          <h3>Mapa individual</h3>
+          <div id="player-activity-map" class="activity-map" aria-live="polite"></div>
+        </article>
+        <article class="visual-card">
+          <span class="panel-label">CONEXIONES REGISTRADAS</span>
+          <h3>Red de pases</h3>
+          <div id="player-pass-network" class="table-wrap">
+            <p class="loading">Cargando red de pases...</p>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="section two-columns">
-      <article class="panel">
-        <p class="eyebrow">Variabilidad</p>
-        <h2>Consistencia entre partidos</h2>
-        <div id="variability-summary" class="table-wrap">
-          <p class="loading">Cargando variabilidad...</p>
+    <section id="balon-parado" class="report-section section-ink">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">06 · VISTAS COLECTIVAS</p>
+          <h2>El equipo,<br>en conjunto.</h2>
+          <p class="section-lede">Goles y acciones a balón parado agregados para el equipo, sin depender de la selección individual.</p>
         </div>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Territorio</p>
-        <h2>Control territorial proxy</h2>
-        <p class="note">Aproximación espacial; no es Field Tilt oficial.</p>
-        <div id="territorial-summary" class="table-wrap">
-          <p class="loading">Cargando proxy...</p>
-        </div>
-      </article>
+        <span class="section-index">EQUIPO COMPLETO</span>
+      </div>
+      <div class="player-visual-grid">
+        <article class="visual-card">
+          <span class="panel-label">TODOS LOS REMATADORES</span>
+          <h3>Mapa colectivo de goles</h3>
+          <p class="chart-caption">Coordenadas originales de la fuente; no están orientadas según la dirección del ataque.</p>
+          <div id="team-goal-map" class="shot-map" aria-live="polite"></div>
+        </article>
+        <article class="chart-panel chart-panel-dark">
+          <span class="panel-label">REANUDACIONES DEL JUEGO</span>
+          <h3>Patrones y resultados</h3>
+          <p class="chart-caption">Las secuencias asociadas a un saque pueden extenderse más allá de la acción inmediata.</p>
+          <div id="team-set-pieces" class="table-wrap">
+            <p class="loading">Cargando balón parado...</p>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section class="section two-columns">
-      <article class="panel">
-        <p class="eyebrow">Defensa</p>
-        <h2>Organización observable</h2>
-        <div id="defensive-summary" class="table-wrap">
-          <p class="loading">Cargando defensa...</p>
+    <section class="report-section conclusion-section">
+      <div class="conclusion-grid">
+        <div>
+          <span class="conclusion-mark">Lectura final</span>
+          <h2>Los datos describen patrones.<br><em>El contexto importa.</em></h2>
         </div>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Ataque</p>
-        <h2>Progresión por zona y carril</h2>
-        <div id="progression-summary" class="table-wrap">
-          <p class="loading">Cargando progresión...</p>
+        <div class="conclusion-copy">
+          <p>Las métricas resumen acciones registradas en una muestra específica. No permiten, por sí solas, atribuir intención táctica, asignar responsabilidades individuales ni concluir que un patrón causó un resultado.</p>
         </div>
-      </article>
+      </div>
+      <div class="conclusion-foot">
+        <span>FUENTE · DATOS DE PARTIDOS STATSBOMB</span>
+        <span>ANÁLISIS OBSERVACIONAL · MUESTRA DE 183 PARTIDOS</span>
+      </div>
     </section>
-
-    <footer class="footer">
-      <span>Fuente: <code>hackathon.db</code> y salidas de <code>jardine_analysis</code></span>
-      <span>Reproducción: <code>python -m jardine_analysis.pipeline</code></span>
-    </footer>
   </main>
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <footer class="site-footer">
+    <span>La evolución de Jardine</span>
+    <span>Informe táctico longitudinal</span>
+  </footer>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
