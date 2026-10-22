@@ -92,7 +92,7 @@ def test_dashboard_translates_raw_stage_names_and_avoids_statistical_shorthand()
     assert 'possession: "Posesión"' in script
     assert 'offensive_sequence: "Secuencia ofensiva"' in script
     assert 'ppda: "PPDA"' in script
-    assert "metadata.limitations" in script
+    assert "metadata.limitations" not in script
     assert "metadata.definitions" in script
     assert "n=${" not in script
     assert "partidos${sampleHint}" in script

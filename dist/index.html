@@ -2543,7 +2543,6 @@ function renderMetadata(metadata = {}, matches = []) {
 
   document.querySelector("#report-limitations").innerHTML = `
     <li class="scope-sample"><strong>${formatNumber(count, 0)} partidos</strong><span>en las tres etapas seleccionadas</span></li>
-    ${(metadata.limitations || []).map((limitation) => `<li>${escapeHtml(limitation)}</li>`).join("")}
   `;
   document.querySelector("#metric-definitions").innerHTML = Object.entries(metadata.definitions || {})
     .map(([term, definition]) => `
