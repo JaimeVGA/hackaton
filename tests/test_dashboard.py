@@ -19,8 +19,10 @@ def test_dashboard_has_static_entrypoint_and_data_sources():
     assert 'id="balon-parado"' in html
     assert 'id="jugadores"' in html
     assert html.index('id="alcance"') < html.index('id="panorama"')
-    assert 'id="report-limitations"' not in html
-    assert 'id="metric-definitions"' not in html
+    assert 'id="report-limitations"' in html
+    assert 'id="metric-definitions"' in html
+    assert "Alcance y límites" in html
+    assert "Definiciones para leer el informe" in html
     assert "report_data.json" in script
 
 
@@ -87,6 +89,11 @@ def test_dashboard_translates_raw_stage_names_and_avoids_statistical_shorthand()
     script = (DASHBOARD / "app.js").read_text(encoding="utf-8")
 
     assert '|| "Etapa no disponible"' in script
+    assert 'possession: "Posesión"' in script
+    assert 'offensive_sequence: "Secuencia ofensiva"' in script
+    assert 'ppda: "PPDA"' in script
+    assert "metadata.limitations" in script
+    assert "metadata.definitions" in script
     assert "n=${" not in script
     assert "partidos${sampleHint}" in script
     assert "La barra muestra el rango central" in (DASHBOARD / "index.html").read_text(encoding="utf-8")

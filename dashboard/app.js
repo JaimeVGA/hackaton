@@ -13,6 +13,14 @@ const stageNames = {
   post_championship_context: "Post campeonatos",
 };
 const stageKeys = Object.keys(stageNames);
+const definitionNames = {
+  possession: "Posesión",
+  offensive_sequence: "Secuencia ofensiva",
+  pressure: "Presión",
+  ppda: "PPDA",
+  transition: "Transición",
+  set_piece: "Balón parado",
+};
 
 const formatNumber = (value, decimals = 1) => {
   if (value === null || value === undefined || value === "") return "Sin datos";
@@ -685,12 +693,24 @@ function renderTeamGoals(rows, team, stage) {
   enableSvgNavigation(container.querySelector(".shot-pitch"), container);
 }
 
-function renderMetadata(matches = []) {
-  const container = document.querySelector("#scope-description");
+function renderMetadata(metadata = {}, matches = []) {
+  const description = document.querySelector("#scope-description");
   const count = matches.filter((row) => stageKeys.includes(row.stage)).length;
-  container.innerHTML =
+  description.innerHTML =
     `<strong>${formatNumber(count, 0)} partidos.</strong> Comparación en tres etapas: Pre-América, América campeón y post campeonatos.`;
-  container.classList.remove("loading");
+  description.classList.remove("loading");
+
+  document.querySelector("#report-limitations").innerHTML = `
+    <li class="scope-sample"><strong>${formatNumber(count, 0)} partidos</strong><span>en las tres etapas seleccionadas</span></li>
+    ${(metadata.limitations || []).map((limitation) => `<li>${escapeHtml(limitation)}</li>`).join("")}
+  `;
+  document.querySelector("#metric-definitions").innerHTML = Object.entries(metadata.definitions || {})
+    .map(([term, definition]) => `
+      <div>
+        <dt>${escapeHtml(definitionNames[term] || term)}</dt>
+        <dd>${escapeHtml(definition)}</dd>
+      </div>
+    `).join("");
 }
 
 function renderSetPieces(rows, team, stage) {
@@ -707,7 +727,7 @@ function renderSetPieces(rows, team, stage) {
 function renderDashboard(report) {
   const stage = document.querySelector("#stage-filter").value;
   const team = document.querySelector("#team-filter").value;
-  renderMetadata(report.matches);
+  renderMetadata(report.metadata || {}, report.matches || []);
   renderPlayerSelect(report, team, stage);
   const playerId = document.querySelector("#player-filter").value;
 

@@ -259,6 +259,18 @@ summary:focus-visible {
   background: var(--card);
 }
 
+.scope-content h3 {
+  margin: 0 0 12px;
+  font: 500 1.35rem Georgia, serif;
+}
+
+.scope-context > p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
 .scope-limitations {
   display: grid;
   align-content: start;
@@ -1261,6 +1273,10 @@ summary:focus-visible {
   align-content: start;
   gap: 10px 18px;
   margin: 0;
+}
+
+.scope-definition-panel {
+  min-width: 0;
 }
 
 .definition-list div {

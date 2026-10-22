@@ -267,6 +267,18 @@ summary:focus-visible {
   background: var(--card);
 }
 
+.scope-content h3 {
+  margin: 0 0 12px;
+  font: 500 1.35rem Georgia, serif;
+}
+
+.scope-context > p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
 .scope-limitations {
   display: grid;
   align-content: start;
@@ -1271,6 +1283,10 @@ summary:focus-visible {
   margin: 0;
 }
 
+.scope-definition-panel {
+  min-width: 0;
+}
+
 .definition-list div {
   padding: 10px 12px;
   border-left: 2px solid var(--green);
@@ -1503,6 +1519,21 @@ summary:focus-visible {
         </div>
         <span class="section-index">3 ETAPAS · ANÁLISIS LONGITUDINAL</span>
       </div>
+        <div class="scope-content">
+          <div class="scope-context">
+            <h3>Alcance y límites</h3>
+            <p>El informe compara patrones observados en partidos de tres etapas. Las etiquetas organizan la muestra como contexto; no verifican por sí solas la competición de cada encuentro.</p>
+            <ul id="report-limitations" class="scope-limitations">
+              <li class="scope-sample"><strong>181 partidos</strong><span>en las tres etapas seleccionadas</span></li>
+            </ul>
+          </div>
+          <div class="scope-definition-panel">
+            <h3>Definiciones para leer el informe</h3>
+            <dl id="metric-definitions" class="definition-list">
+              <div><dt>Posesión</dt><dd>Tramo continuo en que un equipo controla el balón.</dd></div>
+            </dl>
+          </div>
+        </div>
     </section>
 
     <section id="panorama" class="report-section section-light">
@@ -1823,6 +1854,14 @@ const stageNames = {
   post_championship_context: "Post campeonatos",
 };
 const stageKeys = Object.keys(stageNames);
+const definitionNames = {
+  possession: "Posesión",
+  offensive_sequence: "Secuencia ofensiva",
+  pressure: "Presión",
+  ppda: "PPDA",
+  transition: "Transición",
+  set_piece: "Balón parado",
+};
 
 const formatNumber = (value, decimals = 1) => {
   if (value === null || value === undefined || value === "") return "Sin datos";
@@ -2495,12 +2534,24 @@ function renderTeamGoals(rows, team, stage) {
   enableSvgNavigation(container.querySelector(".shot-pitch"), container);
 }
 
-function renderMetadata(matches = []) {
-  const container = document.querySelector("#scope-description");
+function renderMetadata(metadata = {}, matches = []) {
+  const description = document.querySelector("#scope-description");
   const count = matches.filter((row) => stageKeys.includes(row.stage)).length;
-  container.innerHTML =
+  description.innerHTML =
     `<strong>${formatNumber(count, 0)} partidos.</strong> Comparación en tres etapas: Pre-América, América campeón y post campeonatos.`;
-  container.classList.remove("loading");
+  description.classList.remove("loading");
+
+  document.querySelector("#report-limitations").innerHTML = `
+    <li class="scope-sample"><strong>${formatNumber(count, 0)} partidos</strong><span>en las tres etapas seleccionadas</span></li>
+    ${(metadata.limitations || []).map((limitation) => `<li>${escapeHtml(limitation)}</li>`).join("")}
+  `;
+  document.querySelector("#metric-definitions").innerHTML = Object.entries(metadata.definitions || {})
+    .map(([term, definition]) => `
+      <div>
+        <dt>${escapeHtml(definitionNames[term] || term)}</dt>
+        <dd>${escapeHtml(definition)}</dd>
+      </div>
+    `).join("");
 }
 
 function renderSetPieces(rows, team, stage) {
@@ -2517,7 +2568,7 @@ function renderSetPieces(rows, team, stage) {
 function renderDashboard(report) {
   const stage = document.querySelector("#stage-filter").value;
   const team = document.querySelector("#team-filter").value;
-  renderMetadata(report.matches);
+  renderMetadata(report.metadata || {}, report.matches || []);
   renderPlayerSelect(report, team, stage);
   const playerId = document.querySelector("#player-filter").value;
 
