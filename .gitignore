@@ -2,3 +2,15 @@
 hackathon.db
 __pycache__/
 .pytest_cache/
+
+# Data files
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated analysis outputs and data bundles
+outputs/
+dashboard/report_data.json
+dist/report_data.json
+dist/data.js
+dist/*.csv
