@@ -248,9 +248,113 @@ summary:focus-visible {
   background: var(--green);
 }
 
+.study-sample {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  margin: -6px 0 22px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.study-sample .sample-dot {
+  margin-top: 6px;
+}
+
+.study-sample p {
+  margin: 0;
+  color: #59685f;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.study-sample strong {
+  color: var(--ink);
+}
+
 .report-section {
   padding: 64px max(7vw, 24px);
   scroll-margin-top: 56px;
+}
+
+.insight-note {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--green);
+  color: #405047;
+  background: #eeede4;
+}
+
+.insight-note > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--green);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.insight-note p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.insight-action {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px 14px;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid #15211d24;
+}
+
+.insight-action > strong {
+  color: var(--green);
+  font-size: 0.7rem;
+}
+
+.insight-action p {
+  color: inherit;
+}
+
+.section-ink .insight-note {
+  color: #d7e1d8;
+  background: #20352b;
+  border-left-color: var(--lime);
+}
+
+.section-ink .insight-note > span {
+  color: var(--lime);
+}
+
+.section-ink .insight-action {
+  border-top-color: #ffffff2b;
+}
+
+.section-ink .insight-action > strong {
+  color: var(--lime);
+}
+
+.section-lime .insight-note {
+  color: #354537;
+  background: #eff7d0;
+}
+
+.section-lime .insight-note > span {
+  color: #426344;
+}
+
+.section-lime .insight-action {
+  border-top-color: #15211d24;
+}
+
+.section-lime .insight-action > strong {
+  color: #426344;
 }
 
 .scope-section {
@@ -326,6 +430,409 @@ summary:focus-visible {
 .section-lime {
   color: var(--ink);
   background: var(--lime);
+}
+
+.club-study-section {
+  background: #e8e9dd;
+}
+
+.club-study-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+}
+
+.club-evidence-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+}
+
+.club-evidence-card h3,
+.club-decisions-heading h3 {
+  margin: 8px 0 14px;
+  font: 500 1.55rem / 1.15 Georgia, serif;
+}
+
+.club-evidence-card p,
+.club-decisions-heading p,
+.club-decision-card p {
+  color: #5f6e65;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.club-evidence-card p:last-of-type {
+  margin-bottom: 0;
+}
+
+.club-evidence-card .panel-label,
+.club-decisions .panel-label {
+  color: var(--green);
+}
+
+.club-evidence-highlight {
+  color: #f0f2e9;
+  border-color: #20352b;
+  background: #20352b;
+}
+
+.club-evidence-highlight .panel-label {
+  color: var(--lime);
+}
+
+.club-evidence-highlight p {
+  color: #d2dcd2;
+}
+
+.club-evidence-highlight p strong {
+  color: #fff;
+}
+
+.club-evidence-highlight small {
+  display: block;
+  margin-top: 14px;
+  color: #afc0b4;
+  font-size: 0.69rem;
+  line-height: 1.5;
+}
+
+.evidence-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.evidence-comparison div {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #ffffff35;
+}
+
+.evidence-comparison span {
+  color: #bdc9bd;
+  font-size: 0.64rem;
+}
+
+.evidence-comparison strong {
+  color: var(--lime);
+  font: 500 clamp(1.1rem, 2vw, 1.6rem) Georgia, serif;
+  white-space: nowrap;
+}
+
+.evidence-stat {
+  display: grid;
+  gap: 4px;
+  margin: 20px 0 14px;
+}
+
+.evidence-stat strong {
+  color: var(--green);
+  font: 500 clamp(1.8rem, 3vw, 2.8rem) Georgia, serif;
+}
+
+.evidence-stat strong span {
+  color: #89968e;
+  font: 400 1.2rem Arial, sans-serif;
+}
+
+.evidence-stat > span {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.club-corner-evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 0.38fr);
+  align-items: center;
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.corner-callout {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border-left: 3px solid var(--green);
+  background: #f0f0e7;
+}
+
+.corner-callout strong {
+  color: var(--green);
+  font: 500 2rem Georgia, serif;
+}
+
+.corner-callout span {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.corner-callout small {
+  color: var(--muted);
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.club-decisions {
+  margin-top: 30px;
+}
+
+.club-decisions-heading {
+  max-width: 690px;
+  margin-bottom: 16px;
+}
+
+.club-decisions-heading h3 {
+  margin-bottom: 6px;
+}
+
+.club-decisions-heading p {
+  margin: 0;
+}
+
+.club-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.club-decision-card {
+  min-width: 0;
+  padding: 20px;
+  border-top: 3px solid var(--green);
+  background: var(--card);
+}
+
+.decision-number {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--lime);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.club-decision-card h4 {
+  margin: 13px 0 8px;
+  font: 500 1.2rem / 1.2 Georgia, serif;
+}
+
+.club-decision-card p {
+  margin: 0 0 12px;
+  font-size: 0.76rem;
+}
+
+.club-decision-card > strong {
+  display: block;
+  margin: 14px 0 5px;
+  color: var(--green);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.club-decision-card > strong + p {
+  margin-bottom: 0;
+}
+
+.club-study-conclusion {
+  margin: 22px 0 8px;
+  padding: 18px 20px;
+  border-left: 3px solid var(--green);
+  color: #33443a;
+  background: #dfe6d2;
+  font: 500 1rem / 1.65 Georgia, serif;
+}
+
+.club-study-source {
+  margin: 0;
+  color: #6d7971;
+  font-size: 0.67rem;
+  line-height: 1.5;
+}
+
+.audit-section {
+  background: #f5f5ef;
+}
+
+.audit-sample-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.audit-sample-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px;
+  border-top: 3px solid var(--green);
+  background: var(--card);
+}
+
+.audit-sample-card strong {
+  color: var(--green);
+  font: 500 clamp(1.7rem, 3vw, 2.5rem) Georgia, serif;
+}
+
+.audit-sample-card span,
+.audit-note {
+  color: #5f6e65;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.audit-note {
+  margin: 0 0 22px;
+}
+
+.audit-trend-card {
+  padding: 28px;
+}
+
+.audit-card-heading {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 0.7fr);
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.audit-card-heading h3 {
+  margin-bottom: 0;
+}
+
+.audit-card-heading > p {
+  margin: 0;
+}
+
+.audit-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: #fbfcf8;
+}
+
+.audit-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  color: var(--ink);
+  font-size: 0.72rem;
+  text-align: left;
+}
+
+.audit-table th,
+.audit-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.audit-table thead th {
+  color: #52645a;
+  background: #edf0e8;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.audit-table tbody th {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.audit-table tbody tr:last-child th,
+.audit-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.audit-footnote {
+  margin: 10px 0 0 !important;
+  font-size: 0.68rem !important;
+}
+
+.audit-interpretation {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 17px 20px;
+  border-left: 3px solid var(--green);
+  background: #eef1e8;
+}
+
+.audit-interpretation > strong {
+  color: var(--green);
+  font: 500 1rem Georgia, serif;
+}
+
+.audit-interpretation p {
+  margin: 0;
+}
+
+.audit-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.audit-pair-stats {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.audit-pair-stats div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+}
+
+.audit-pair-stats strong {
+  color: var(--green);
+  font: 500 1.35rem Georgia, serif;
+  white-space: nowrap;
+}
+
+.audit-pair-stats span {
+  color: #5f6e65;
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.audit-state-table {
+  min-width: 0;
+}
+
+.audit-corners-card {
+  margin-top: 18px;
+}
+
+.audit-decisions {
+  margin-top: 30px;
+}
+
+.audit-limits {
+  margin: 22px 0 10px;
+  padding: 16px 18px;
+  border-left: 3px solid #8a7652;
+  color: #59665d;
+  background: #ecebe2;
+  font-size: 0.76rem;
+  line-height: 1.6;
 }
 
 .section-kicker {
@@ -1378,10 +1885,24 @@ summary:focus-visible {
   .context-grid,
   .player-visual-grid,
   .scope-content,
+  .club-study-grid,
+  .audit-evidence-grid,
+  .audit-card-heading,
+  .club-corner-evidence,
+  .club-decision-grid,
   .formation-row,
   .opponent-panel,
   .conclusion-grid {
     grid-template-columns: 1fr;
+  }
+
+  .audit-sample-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .audit-interpretation {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .context-grid.lower-visuals > * {
@@ -1433,6 +1954,33 @@ summary:focus-visible {
     padding: 16px;
   }
 
+  .club-evidence-card,
+  .club-decision-card {
+    padding: 17px;
+  }
+
+  .evidence-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-sample-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-trend-card {
+    padding: 17px;
+  }
+
+  .audit-pair-stats div {
+    align-items: start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .audit-pair-stats span {
+    text-align: left;
+  }
+
   .stage-card {
     min-height: 0;
   }
@@ -1456,6 +2004,11 @@ summary:focus-visible {
 
   .definition-list {
     grid-template-columns: 1fr;
+  }
+
+  .insight-action {
+    grid-template-columns: 1fr;
+    gap: 5px;
   }
 
   .conclusion-foot,
@@ -1488,6 +2041,8 @@ summary:focus-visible {
     <a href="#panorama">PANORAMA</a>
     <a href="#identidad">IDENTIDAD</a>
     <a href="#contexto">CONTEXTO</a>
+    <a href="#hallazgos">HALLAZGOS Y PROPUESTA</a>
+    <a href="#evidencia-ampliada">EVIDENCIA AMPLIADA</a>
     <a href="#jugadores">JUGADORES</a>
     <a href="#balon-parado">BALÓN PARADO</a>
   </nav>
@@ -1534,6 +2089,11 @@ summary:focus-visible {
             </dl>
           </div>
         </div>
+      <aside class="insight-note">
+        <span>Cómo leer esta muestra</span>
+        <p id="scope-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Cómo aprovecharla</strong><p id="scope-insight-action">Preparando sugerencia...</p></div>
+      </aside>
     </section>
 
     <section id="panorama" class="report-section section-light">
@@ -1548,6 +2108,11 @@ summary:focus-visible {
       <div id="stage-summary" class="stage-grid" aria-live="polite">
         <p class="loading">Cargando resumen...</p>
       </div>
+      <aside class="insight-note">
+        <span>Qué nos dicen los promedios</span>
+        <p id="panorama-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Qué probar</strong><p id="panorama-insight-action">Preparando sugerencia...</p></div>
+      </aside>
     </section>
 
     <section id="identidad" class="report-section section-ink">
@@ -1623,6 +2188,11 @@ summary:focus-visible {
           </div>
         </div>
       </div>
+      <aside class="insight-note">
+        <span>Lectura de identidad y patrones</span>
+        <p id="identity-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Qué probar</strong><p id="identity-insight-action">Preparando sugerencia...</p></div>
+      </aside>
     </section>
 
     <section id="contexto" class="report-section section-light">
@@ -1679,6 +2249,11 @@ summary:focus-visible {
           <p class="loading">Cargando partidos...</p>
         </div>
       </div>
+      <aside class="insight-note">
+        <span>Lectura de contexto</span>
+        <p id="context-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Qué probar</strong><p id="context-insight-action">Preparando sugerencia...</p></div>
+      </aside>
     </section>
 
     <section id="jugadores" class="report-section section-lime">
@@ -1711,6 +2286,11 @@ summary:focus-visible {
           <p class="map-caption">Las flechas indican quién pasa a quién; el grosor compara el volumen acumulado. Pasa el cursor sobre una flecha para ver conteo y promedio por partido.</p>
         </article>
       </div>
+      <aside class="insight-note">
+        <span>Lectura individual</span>
+        <p id="players-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Qué probar</strong><p id="players-insight-action">Preparando sugerencia...</p></div>
+      </aside>
     </section>
 
     <section id="balon-parado" class="report-section section-ink">
@@ -1738,16 +2318,249 @@ summary:focus-visible {
           </div>
         </article>
       </div>
+      <aside class="insight-note">
+        <span>Lectura colectiva</span>
+        <p id="collective-insight-analysis">Preparando análisis...</p>
+        <div class="insight-action"><strong>Qué probar</strong><p id="collective-insight-action">Preparando sugerencia...</p></div>
+      </aside>
+    </section>
+
+    <section id="hallazgos" class="report-section club-study-section">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">07 · LECTURA APLICADA</p>
+          <h2>De la evidencia<br>a una decisión.</h2>
+          <p class="section-lede">Nuestro aporte es conectar los patrones con preguntas de video, prioridades de trabajo y criterios para comprobar si un ajuste funciona.</p>
+        </div>
+        <span class="section-index">HALLAZGO · HIPÓTESIS · EVALUACIÓN</span>
+      </div>
+
+      <div class="study-sample">
+        <span class="sample-dot"></span>
+        <p><strong>Estudio complementario:</strong> comparación de 51 partidos de liga regular del América —17 por torneo, AP23, CL24 y AP24— y 716 remates sin penal. Estas cifras proceden del análisis del equipo y son una muestra distinta de los 181 partidos longitudinales resumidos arriba; no se mezclan entre sí.</p>
+      </div>
+
+      <div class="club-study-grid">
+        <article class="club-evidence-card club-evidence-highlight">
+          <span class="panel-label">HALLAZGO PRINCIPAL · AP23 A AP24</span>
+          <h3>El volumen se sostuvo; la calidad de las ocasiones, no.</h3>
+          <div class="evidence-comparison">
+            <div><span>Remates sin penal</span><strong>245 → 245</strong></div>
+            <div><span>npxG acumulado</span><strong>31,75 → 24,73</strong></div>
+            <div><span>npxG por remate</span><strong>0,130 → 0,101</strong></div>
+          </div>
+          <p>Al mismo tiempo, la participación en pases avanzados subió de <strong>62,9%</strong> a <strong>67,8%</strong>, mientras las posesiones con entrada al área bajaron de <strong>279</strong> a <strong>265</strong>. Más circulación avanzada no garantizó mejores ocasiones.</p>
+          <small>npxG estima la calidad de los remates sin penal; no son goles anotados ni goles que una intervención garantice recuperar.</small>
+        </article>
+
+        <article class="club-evidence-card">
+          <span class="panel-label">EL CAMBIO SE CONCENTRA AL IR PERDIENDO</span>
+          <h3>Más remates exteriores en AP24.</h3>
+          <div class="evidence-stat"><strong>31,8% <span>→</span> 54,1%</strong><span>remates desde fuera del área · AP23 a AP24</span></div>
+          <p>Fueron <strong>7 de 22</strong> remates en desventaja en AP23 y <strong>40 de 74</strong> en AP24. AP24 también tuvo más partidos con tiros en desventaja, así que el cambio es una señal contextual, no prueba de causalidad.</p>
+          <p>Contra Pumas, América registró <strong>5,3 entradas al área por cada 100 pases avanzados</strong>, frente a 12,8 en sus otros contextos de desventaja de AP24.</p>
+        </article>
+      </div>
+
+      <article class="club-evidence-card club-corner-evidence">
+        <div>
+          <span class="panel-label">SEGUNDA SEÑAL · CÓRNERS</span>
+          <h3>Importa dónde termina la jugada, no solo cuántos tiros hubo.</h3>
+          <p>AP23 y AP24 tuvieron 24 primeros remates de córner propios cada uno, pero los remates desde el área chica bajaron de <strong>9 a 1</strong> y el npxG acumulado de <strong>2,56 a 1,89</strong>. En córners rivales, 44 de 81 primeros remates se ubicaron en la franja central.</p>
+        </div>
+        <div class="corner-callout">
+          <strong>44 / 81</strong>
+          <span>primeros tiros de córner rival en la franja central</span>
+          <small>Es una concentración de remates, no una tasa de vulnerabilidad por envío ni evidencia de un fallo de marcaje.</small>
+        </div>
+      </article>
+
+      <div class="club-decisions">
+        <div class="club-decisions-heading">
+          <span class="panel-label">PROPUESTA PARA EL CLUB · POR VALIDAR</span>
+          <h3>De la señal a una tarea evaluable.</h3>
+          <p>El análisis localiza dónde empezar; la revisión de video y el cuerpo técnico deben decidir la intervención concreta.</p>
+        </div>
+        <div class="club-decision-grid">
+          <article class="club-decision-card">
+            <span class="decision-number">01</span>
+            <h4>Revisar cómo se entra al área.</h4>
+            <p>Empezar por Pumas, Cruz Azul y Necaxa: reúnen 19 de los 40 remates exteriores de AP24 en desventaja. Comparar secuencias que continúan hacia una recepción en el área con las que terminan en tiro exterior.</p>
+            <strong>Medir</strong>
+            <p>Entradas y npxG por posesión, junto con el peligro rival después de perder el balón.</p>
+          </article>
+          <article class="club-decision-card">
+            <span class="decision-number">02</span>
+            <h4>Separar las dos tareas de córner.</h4>
+            <p>En ataque, revisar las llegadas que producen un primer remate cerca del arco. En defensa, estudiar primera disputa, cobertura central y continuidad tras el despeje; las coordenadas no revelan el tipo de marcaje.</p>
+            <strong>Medir</strong>
+            <p>Primer contacto, zona del primer tiro y npxG por saque, incluyendo el peligro posterior al despeje.</p>
+          </article>
+          <article class="club-decision-card">
+            <span class="decision-number">03</span>
+            <h4>Evaluar la función, no solo el conteo.</h4>
+            <p>Antes de probar una variante de presión o una sustitución, declarar qué se busca cambiar: conectar, progresar, entrar o finalizar. Comparar ventanas de igual duración y considerar marcador y ajustes del rival.</p>
+            <strong>Medir</strong>
+            <p>Producción de la función elegida, control tras presión y calidad de las ocasiones concedidas.</p>
+          </article>
+        </div>
+      </div>
+
+      <p class="club-study-conclusion"><strong>Conclusión del equipo:</strong> los datos apuntan a una identidad reconocible, pero adaptable. La oportunidad concreta no es pedir más remates: es convertir mejor la circulación en penetración y ocasiones de calidad, especialmente en desventaja. Las propuestas son hipótesis de trabajo; deben probarse con video y medirse en contextos comparables antes de adoptarse.</p>
+      <p class="club-study-source">Fuente: análisis complementario del equipo sobre partidos de liga regular AP23, CL24 y AP24. Sus resultados describen esa muestra histórica; no aíslan por completo rival, plantilla, expulsiones u otros factores.</p>
+    </section>
+
+    <section id="evidencia-ampliada" class="report-section audit-section">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">08 · AMPLIACIÓN AUDITADA</p>
+          <h2>La caída de AP24<br>no es una tendencia continua.</h2>
+          <p class="section-lede">Una segunda entrega permite ampliar la comparación y revisar qué cambia —y qué no— al incorporar más torneos, rivales y situaciones de partido.</p>
+        </div>
+        <span class="section-index">MUESTRAS SEPARADAS · CIFRAS CON CONTEXTO</span>
+      </div>
+
+      <div class="audit-sample-grid" aria-label="Universos de datos auditados">
+        <article class="audit-sample-card">
+          <strong>183</strong>
+          <span>partidos únicos en el inventario de la entrega</span>
+        </article>
+        <article class="audit-sample-card">
+          <strong>182</strong>
+          <span>partidos seleccionados por metadatos para el análisis</span>
+        </article>
+        <article class="audit-sample-card">
+          <strong>144</strong>
+          <span>partidos dentro de la ventana oficial identificada</span>
+        </article>
+        <article class="audit-sample-card">
+          <strong>66</strong>
+          <span>partidos de liga regular del América en AP23–CL25</span>
+        </article>
+      </div>
+      <p class="audit-note">Son conteos de universos distintos, no etapas consecutivas de una misma muestra. Los 66 partidos se distribuyen en AP23, CL24, AP24 y CL25 (17, 17, 17 y 15); el contraste histórico de 51 partidos usa solo los tres primeros torneos (17 por torneo).</p>
+
+      <article class="club-evidence-card audit-trend-card">
+        <div class="audit-card-heading">
+          <div>
+            <span class="panel-label">LIGA REGULAR · AMÉRICA · 66 PARTIDOS</span>
+            <h3>El equipo volvió a generar ocasiones de mayor calidad en CL25.</h3>
+          </div>
+          <p>El promedio de npxG por remate baja hasta AP24 y después se recupera parcialmente. Por eso, los datos no respaldan contar la historia como un descenso continuo.</p>
+        </div>
+        <div class="audit-table-wrap">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th scope="col">Torneo</th>
+                <th scope="col">Partidos</th>
+                <th scope="col">npxG por remate</th>
+                <th scope="col">Pases avanzados*</th>
+                <th scope="col">Entradas al área / 100 pases avanzados</th>
+                <th scope="col">Presión alta*</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">AP23</th><td>17</td><td>0,130</td><td>62,9%</td><td>15,2</td><td>24,0%</td></tr>
+              <tr><th scope="row">CL24</th><td>17</td><td>0,127</td><td>62,2%</td><td>16,1</td><td>24,2%</td></tr>
+              <tr><th scope="row">AP24</th><td>17</td><td>0,101</td><td>67,8%</td><td>14,2</td><td>23,2%</td></tr>
+              <tr><th scope="row">CL25</th><td>15</td><td>0,114</td><td>65,7%</td><td>17,4</td><td>25,6%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="audit-footnote">*La cuota de pases avanzados es la parte de los pases completados en el último tercio que corresponde al América, frente a ambos equipos; las entradas por 100 pases usan esa misma base e incluyen reanudaciones. La presión alta cuenta eventos en el tercio alto sobre todas las presiones propias: no mide la altura exacta del bloque ni su eficacia. Más pases avanzados o presión alta no significan automáticamente más peligro o mejor defensa. npxG por remate resume la calidad estimada de los tiros sin penal, no los goles convertidos.</p>
+        <div class="audit-interpretation">
+          <strong>Lectura sencilla</strong>
+          <p>En AP24 hubo más participación en pases avanzados, pero menos entradas al área por cada 100 de esos pases y menor calidad media de remate. En CL25 mejoró ese acceso y el npxG por tiro subió a <strong>0,114</strong>, aunque aún quedó por debajo de AP23. La pista es comprobar si la circulación termina en una recepción peligrosa, no premiar el pase avanzado por sí solo.</p>
+        </div>
+      </article>
+
+      <div class="audit-evidence-grid">
+        <article class="club-evidence-card">
+          <span class="panel-label">CONTRASTE EMPAREJADO · AP23 VS AP24</span>
+          <h3>Al igualar rival y localía, el promedio sigue a la baja; la incertidumbre es amplia.</h3>
+          <div class="audit-pair-stats">
+            <div><strong>11</strong><span>pares de partidos comparables</span></div>
+            <div><strong>21,33 → 14,52</strong><span>npxG agregado en esos pares</span></div>
+            <div><strong>7 / 11</strong><span>pares con descenso de npxG</span></div>
+          </div>
+          <p>En esos partidos hubo 153 remates sin penal por torneo. El intervalo exploratorio incluye cero (−1,28 a +0,02 de diferencia media por partido), así que el resultado sugiere una señal, pero no confirma una caída generalizable ni demuestra su causa.</p>
+        </article>
+
+        <article class="club-evidence-card">
+          <span class="panel-label">EL MARCADOR CAMBIA LA LECTURA</span>
+          <h3>Al ir perdiendo, la calidad del tiro cayó más en AP24.</h3>
+          <div class="audit-table-wrap">
+            <table class="audit-table audit-state-table">
+              <thead><tr><th scope="col">Situación</th><th scope="col">AP23</th><th scope="col">AP24</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Empate</th><td>0,128</td><td>0,106</td></tr>
+                <tr><th scope="row">América en desventaja</th><td>0,141</td><td>0,075</td></tr>
+                <tr><th scope="row">América en ventaja</th><td>0,129</td><td>0,125</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Son valores de npxG por remate. La muestra y el tiempo jugado en cada marcador difieren entre torneos; conviene revisar video de los ataques en desventaja antes de atribuir la diferencia a una decisión táctica.</p>
+        </article>
+      </div>
+
+      <article class="club-evidence-card audit-corners-card">
+        <div>
+          <span class="panel-label">CÓRNERS · AP23 VS AP24</span>
+          <h3>Un poco más de primeros tiros por saque, pero menos peligro por tiro.</h3>
+          <p>El América tuvo <strong>84 córners</strong> en AP23 y <strong>76</strong> en AP24; obtuvo 24 primeros remates en cada torneo. Al normalizar por saques, la frecuencia pasó de <strong>28,6 a 31,6 por cada 100 córners</strong>, pero el npxG por primer remate bajó de <strong>0,107 a 0,079</strong>.</p>
+          <p>En conjunto, el npxG de esos primeros remates pasó de <strong>3,05 a 2,49 por cada 100 córners</strong>. La mejora del conteo, por tanto, no equivale a una mejora clara en la calidad de la ocasión.</p>
+        </div>
+        <div class="corner-callout">
+          <strong>9 → 1</strong>
+          <span>primeros remates desde el área chica</span>
+          <small>Una diferencia descriptiva de 24 primeros remates por torneo; útil para seleccionar video, no para concluir por sí sola qué rutina funcionó.</small>
+        </div>
+      </article>
+
+      <div class="club-decisions audit-decisions">
+        <div class="club-decisions-heading">
+          <span class="panel-label">QUÉ HACER CON ESTA EVIDENCIA</span>
+          <h3>Convertir las señales en pruebas de entrenamiento.</h3>
+          <p>Estas son propuestas del equipo para Jardine y el club; requieren validación con video y seguimiento en nuevas muestras.</p>
+        </div>
+        <div class="club-decision-grid">
+          <article class="club-decision-card">
+            <span class="decision-number">01</span>
+            <h4>Seguir el pase hasta el área.</h4>
+            <p>Revisar secuencias de AP24 y CL25: ¿el pase avanzado termina en una recepción dentro del área, un centro disputable o un tiro exterior?</p>
+            <strong>Comparar</strong>
+            <p>Entradas al área por cada 100 pases avanzados, npxG por tiro y marcador.</p>
+          </article>
+          <article class="club-decision-card">
+            <span class="decision-number">02</span>
+            <h4>Evaluar el córner por su desenlace.</h4>
+            <p>En video, comprobar qué servicios y movimientos producen remates cercanos y cuáles permiten despeje o contraataque.</p>
+            <strong>Registrar</strong>
+            <p>Primer remate, zona, npxG por saque y peligro concedido tras la segunda jugada.</p>
+          </article>
+          <article class="club-decision-card">
+            <span class="decision-number">03</span>
+            <h4>Medir en periodos comparables.</h4>
+            <p>Repetir los indicadores en ventanas de partidos similares y separar localía, rival y marcador para no confundir cambios de contexto con mejoras.</p>
+            <strong>Evitar</strong>
+            <p>Usar una sola cifra o una muestra pequeña como prueba de causalidad.</p>
+          </article>
+        </div>
+      </div>
+
+      <p class="audit-limits"><strong>Límites de esta ampliación:</strong> la selección por metadatos no certifica por sí sola la presencia individual del técnico en cada partido; el inventario registra metadatos 360, pero la entrega no contiene fotogramas 360 locales para validar acciones individuales. Los resultados son descriptivos, no prueban intención táctica ni causalidad.</p>
+      <p class="club-study-source">Fuente: Arctix_Entrega_Integral, auditoría y resultados agregados. El análisis histórico de 51 partidos, los 66 partidos regulares del América, los 144 partidos de ventana oficial y el inventario de 183 IDs son universos distintos; no se suman ni se presentan como una sola muestra.</p>
     </section>
 
     <section class="report-section conclusion-section">
       <div class="conclusion-grid">
         <div>
           <span class="conclusion-mark">Lectura final</span>
-          <h2>Los datos describen patrones.<br><em>El contexto importa.</em></h2>
+          <h2>Mejorar el acceso.<br><em>Medir el efecto.</em></h2>
         </div>
         <div class="conclusion-copy">
-          <p>Las métricas resumen acciones registradas en una muestra específica. No permiten, por sí solas, atribuir intención táctica, asignar responsabilidades individuales ni concluir que un patrón causó un resultado.</p>
+          <p>La serie ampliada muestra una caída de la calidad media del remate en AP24 y una recuperación parcial en CL25; no una evolución lineal. La prioridad es convertir la circulación en ocasiones de mayor calidad, sin perder de vista el riesgo propio. Como siguiente paso, el club puede probar por separado una mejora para entrar al área y un ajuste en los córners; comparar tiros claros, xG creado y peligro permitido en partidos de contexto parecido, y conservar solo los cambios que funcionen de forma repetida.</p>
         </div>
       </div>
       <div class="conclusion-foot">
@@ -1775,9 +2588,379 @@ const includedStages = new Set([
   "post_championship_context",
 ]);
 
+const insightStageNames = {
+  pre_america: "Pre-América",
+  america_championship_context: "América campeón",
+  post_championship_context: "Post campeonatos",
+};
+const insightZoneNames = {
+  "0-40": "salida",
+  "40-80": "progresión",
+  "80-120": "último tercio",
+  ATTACKING_THIRD: "tercio ofensivo",
+  DEFENSIVE_THIRD: "tercio defensivo",
+  MIDDLE_THIRD: "tercio medio",
+  PENALTY_BOX: "área",
+};
+const insightLaneNames = { center: "centro", left: "carril izquierdo", right: "carril derecho" };
+const insightActionNames = {
+  "Ball Recovery": "recuperaciones",
+  Block: "bloqueos",
+  Clearance: "despejes",
+  Dispossessed: "pérdidas",
+  Duel: "duelos",
+  Error: "errores",
+  Interception: "intercepciones",
+  Pressure: "presiones",
+};
+const insightMetricNames = {
+  passes: "pases por partido",
+  progressive_passes: "pases progresivos por partido",
+  pressures: "presiones por partido",
+  high_pressures: "presiones altas por partido",
+  recoveries: "recuperaciones por partido",
+  high_recoveries: "recuperaciones altas por partido",
+  shots: "remates por partido",
+  xg: "xG por partido",
+  ppda: "PPDA",
+};
+const insightStateNames = {
+  ganando: "ventaja",
+  empatando: "empate",
+  perdiendo: "desventaja",
+};
+const insightPatternNames = {
+  "From Corner": "córner",
+  "From Free Kick": "tiro libre",
+  "From Throw In": "saque de banda",
+};
+
+function insightNumber(value, digits = 1) {
+  const number = Number(value);
+  return Number.isFinite(number)
+    ? number.toLocaleString("es-MX", { maximumFractionDigits: digits })
+    : "sin datos";
+}
+
+function insightStage(stage) {
+  return insightStageNames[stage] || "etapa no disponible";
+}
+
 function matchesModelScope(row, team, stage) {
   return (team === "all" || row.team === team)
     && (stage === "all" ? includedStages.has(row.stage) : row.stage === stage);
+}
+
+function buildSectionCommentaries(report, team, stage, playerId) {
+  const scope = (rows = []) => rows.filter((row) => matchesModelScope(row, team, stage));
+  const matchCount = new Set(
+    (report.matches || [])
+      .filter((row) => includedStages.has(row.stage))
+      .map((row) => row.match_id)
+      .filter((id) => id != null),
+  ).size;
+  const reportMatchCount = Number(report.metadata?.match_count) || matchCount;
+
+  const panoramaRows = scope(report.stage_summary)
+    .filter((row) => Number(row.matches) > 0 && Number(row.shots) > 0);
+  const panoramaComparisons = panoramaRows.map((row) => ({
+    ...row,
+    xgPerShot: Number(row.xg) / Number(row.shots),
+  })).filter((row) => Number.isFinite(row.xgPerShot));
+  let panorama = "No hay promedios disponibles para los filtros actuales.";
+  if (panoramaComparisons.length === 1) {
+    const row = panoramaComparisons[0];
+    panorama = `En ${insightNumber(row.matches, 0)} partidos, ${row.team} promedió ${insightNumber(row.shots)} remates y ${insightNumber(row.xg, 2)} xG por partido; el xG por remate fue ${insightNumber(row.xgPerShot, 3)}. El xG estima qué tan probable era que cada tiro terminara en gol según la situación: ${insightNumber(row.xgPerShot * 100, 1)}% equivale aproximadamente a esa probabilidad media, no a una garantía para un tiro concreto.`;
+  } else if (panoramaComparisons.length > 1) {
+    const highest = [...panoramaComparisons].sort((a, b) => b.xgPerShot - a.xgPerShot)[0];
+    const lowest = [...panoramaComparisons].sort((a, b) => a.xgPerShot - b.xgPerShot)[0];
+    panorama = `Para comparar la calidad media de los tiros, dividimos el xG entre los remates: a eso le llamamos xG por remate. El valor más alto es ${insightNumber(highest.xgPerShot, 3)} en ${highest.team} · ${insightStage(highest.stage)} (${insightNumber(highest.matches, 0)} partidos), y el más bajo ${insightNumber(lowest.xgPerShot, 3)} en ${lowest.team} · ${insightStage(lowest.stage)} (${insightNumber(lowest.matches, 0)} partidos). El valor alto equivale aproximadamente a ${insightNumber(highest.xgPerShot * 100, 1)}% de probabilidad media por tiro, no a una promesa de gol. Rival, torneo y plantilla pueden diferir entre etapas, así que no es una comparación controlada.`;
+  }
+
+  const progressionGroups = new Map();
+  scope(report.progression_summary).forEach((row) => {
+    const key = `${row.team}|${row.stage}|${row.zone}|${row.lane}`;
+    const group = progressionGroups.get(key) || {
+      team: row.team, stage: row.stage, zone: row.zone, lane: row.lane, passes: 0, matches: new Set(),
+    };
+    group.passes += Number(row.progressive_passes) || 0;
+    if (row.match_id != null) group.matches.add(row.match_id);
+    progressionGroups.set(key, group);
+  });
+  const topProgression = [...progressionGroups.values()]
+    .filter((row) => row.matches.size)
+    .map((row) => ({ ...row, perMatch: row.passes / row.matches.size }))
+    .sort((a, b) => b.perMatch - a.perMatch)[0];
+
+  const defensiveGroups = new Map();
+  scope(report.defensive_summary).forEach((row) => {
+    const key = `${row.team}|${row.stage}|${row.action}|${row.zone}`;
+    const group = defensiveGroups.get(key) || {
+      team: row.team, stage: row.stage, action: row.action, zone: row.zone, actions: 0, matches: new Set(),
+    };
+    group.actions += Number(row.actions) || 0;
+    if (row.match_id != null) group.matches.add(row.match_id);
+    defensiveGroups.set(key, group);
+  });
+  const topDefensive = [...defensiveGroups.values()]
+    .filter((row) => row.matches.size)
+    .map((row) => ({ ...row, perMatch: row.actions / row.matches.size }))
+    .sort((a, b) => b.perMatch - a.perMatch)[0];
+
+  const transitionRows = scope(report.transition_summary);
+  const topTransition = [...transitionRows]
+    .filter((row) => Number(row.transitions) >= 5)
+    .sort((a, b) =>
+      (Number(b.xg_generated) || 0) / Number(b.transitions)
+      - (Number(a.xg_generated) || 0) / Number(a.transitions)
+    )[0];
+  const variableMetric = scope(report.variability_summary)
+    .filter((row) => Number(row.mean) > 0)
+    .map((row) => ({
+      ...row,
+      relativeRange: (Number(row.q3) - Number(row.q1)) / Number(row.mean),
+    }))
+    .filter((row) => Number.isFinite(row.relativeRange))
+    .sort((a, b) => b.relativeRange - a.relativeRange)[0];
+  const topFormation = scope(report.formation_summary)
+    .sort((a, b) => Number(b.matches) - Number(a.matches))[0];
+  const decisionRows = scope(report.decision_summary)
+    .sort((a, b) =>
+      Number(b.matches_with_substitution) - Number(a.matches_with_substitution)
+    );
+  const representativeDecision = decisionRows[0];
+  const territoryGroups = new Map();
+  scope(report.territorial_proxy).forEach((row) => {
+    const key = `${row.team}|${row.stage}`;
+    const group = territoryGroups.get(key) || {
+      team: row.team, stage: row.stage, matches: 0, share: 0,
+    };
+    group.matches += 1;
+    group.share += Number(row.proxy_share) || 0;
+    territoryGroups.set(key, group);
+  });
+  const topTerritory = [...territoryGroups.values()]
+    .filter((row) => row.matches)
+    .map((row) => ({ ...row, averageShare: row.share / row.matches }))
+    .sort((a, b) => b.averageShare - a.averageShare)[0];
+  const identityFindings = [];
+  if (topProgression) {
+    identityFindings.push(
+      `Pases: el mayor volumen de pases progresivos —pases que la fuente marca como avance— fue ${insightNumber(topProgression.perMatch)} por partido en ${insightZoneNames[topProgression.zone] || topProgression.zone} · ${insightLaneNames[topProgression.lane] || topProgression.lane} (${topProgression.team}, ${insightStage(topProgression.stage)}, ${insightNumber(topProgression.matches.size, 0)} partidos). La zona es una coordenada original y no necesariamente indica hacia dónde se atacaba.`,
+    );
+  }
+  if (topDefensive) {
+    identityFindings.push(
+      `Defensa: lo que más se registró fue ${insightActionNames[topDefensive.action] || topDefensive.action} en ${insightZoneNames[topDefensive.zone] || topDefensive.zone}: ${insightNumber(topDefensive.perMatch)} por partido (${topDefensive.team}, ${insightStage(topDefensive.stage)}, ${insightNumber(topDefensive.matches.size, 0)} partidos). Que haya más acciones no significa automáticamente defender mejor; también puede significar que el rival tuvo más tiempo el balón.`,
+    );
+  }
+  if (topTransition) {
+    identityFindings.push(
+      `Tras recuperar: las secuencias iniciadas en ${insightZoneNames[topTransition.zona_recuperacion] || topTransition.zona_recuperacion} generaron ${insightNumber((Number(topTransition.xg_generated) || 0) / Number(topTransition.transitions), 3)} xG por transición en ${insightNumber(topTransition.transitions, 0)} secuencias (${topTransition.team} · ${insightStage(topTransition.stage)}). El xG estima la calidad de los tiros posteriores; no cuenta goles garantizados.`,
+    );
+  }
+  const structureFindings = [];
+  if (topFormation) {
+    structureFindings.push(
+      `Formación: ${formatFormation(topFormation.formacion)} fue la colocación inicial más repetida (${topFormation.team} · ${insightStage(topFormation.stage)}, ${insightNumber(topFormation.matches, 0)} partidos). El dibujo representa cuatro defensores, dos mediocampistas, tres jugadores más adelantados y un delantero; las posiciones pueden cambiar durante el juego.`,
+    );
+  }
+  if (representativeDecision) {
+    structureFindings.push(
+      `Ajustes: en ${representativeDecision.team} · ${insightStage(representativeDecision.stage)} hubo ${insightNumber(representativeDecision.substitution_events, 0)} sustituciones y ${insightNumber(representativeDecision.formation_change_events, 0)} cambios de formación. Estos conteos no revelan la intención del cuerpo técnico ni demuestran si el cambio funcionó.`,
+    );
+  }
+  if (variableMetric) {
+    structureFindings.push(
+      `Regularidad: la mitad de los partidos de ${variableMetric.team} · ${insightStage(variableMetric.stage)} quedó entre ${insightNumber(variableMetric.q1, 1)} y ${insightNumber(variableMetric.q3, 1)} en ${variableMetric.metric === "ppda" ? "PPDA (un indicador de presión)" : insightMetricNames[variableMetric.metric] || variableMetric.metric} (${insightNumber(variableMetric.matches, 0)} partidos). Un rango amplio indica que el promedio cambia bastante de un partido a otro.`,
+    );
+  }
+  if (topTerritory) {
+    structureFindings.push(
+      `Ubicación del juego: el proxy territorial fue ${insightNumber(topTerritory.averageShare * 100, 1)}% para ${topTerritory.team} · ${insightStage(topTerritory.stage)} (${insightNumber(topTerritory.matches, 0)} partidos). Es una proporción de pases en una zona dibujada, no una medida oficial de dominio; la fuente no indica hacia qué portería se atacaba.`,
+    );
+  }
+  const identity = identityFindings.length || structureFindings.length
+    ? `${identityFindings.join("\n\n")} ${structureFindings.join("\n\n")}`
+    : "No hay métricas de progresión, defensa, estructura o transición disponibles para los filtros actuales.";
+
+  const contextRows = scope(report.context_summary);
+  const stateGroups = new Map();
+  contextRows.forEach((row) => {
+    const group = stateGroups.get(row.estado) || { state: row.estado, matches: 0, eventRows: 0 };
+    group.matches += Number(row.matches) || 0;
+    group.eventRows += Number(row.event_rows) || 0;
+    stateGroups.set(row.estado, group);
+  });
+  const topState = [...stateGroups.values()].sort((a, b) => b.eventRows - a.eventRows)[0];
+  const venueGroups = new Map();
+  scope(report.venue_summary).forEach((row) => {
+    const group = venueGroups.get(row.venue) || { venue: row.venue, matches: 0, xg: 0 };
+    const matches = Number(row.matches) || 0;
+    group.matches += matches;
+    group.xg += (Number(row.average_xg) || 0) * matches;
+    venueGroups.set(row.venue, group);
+  });
+  const venueComparisons = [...venueGroups.values()].filter((row) => row.matches)
+    .map((row) => ({ ...row, averageXg: row.xg / row.matches }));
+  const home = venueComparisons.find((row) => row.venue === "home");
+  const away = venueComparisons.find((row) => row.venue === "away");
+  const opponentRows = scope(report.opponent_summary);
+  const opponentCounts = opponentRows.map((row) => Number(row.matches) || 0).filter(Boolean);
+  const possessionRows = scope(report.possession_summary);
+  const possessions = possessionRows.reduce((sum, row) => sum + (Number(row.possessions) || 0), 0);
+  const possessionPasses = possessions
+    ? possessionRows.reduce((sum, row) =>
+      sum + (Number(row.average_passes) || 0) * (Number(row.possessions) || 0), 0) / possessions
+    : null;
+  const possessionDuration = possessions
+    ? possessionRows.reduce((sum, row) =>
+      sum + (Number(row.average_duration_seconds) || 0) * (Number(row.possessions) || 0), 0) / possessions
+    : null;
+  const possessionShots = possessionRows.reduce((sum, row) => sum + (Number(row.shots) || 0), 0);
+  const contextParts = [];
+  if (topState) {
+    contextParts.push(
+      `Marcador: en los eventos se registró el estado de ${insightStateNames[topState.state] || topState.state} en ${insightNumber(topState.matches, 0)} apariciones por equipo/etapa, con ${insightNumber(topState.eventRows, 0)} filas. No indica qué porcentaje del encuentro se jugó así; muchos partidos empiezan empatados.`,
+    );
+  }
+  if (possessions) {
+    contextParts.push(
+      `Ritmo: las ${insightNumber(possessions, 0)} posesiones promediaron ${insightNumber(possessionPasses)} pases y ${insightNumber(possessionDuration)} segundos; se asociaron ${insightNumber(possessionShots, 0)} remates. Una posesión es un tramo de control del balón: alargarla o dar más pases no garantiza crear peligro.`,
+    );
+  }
+  if (home && away) {
+    contextParts.push(
+      `Localía: el xG medio fue ${insightNumber(home.averageXg, 2)} en casa (${insightNumber(home.matches, 0)} partidos) y ${insightNumber(away.averageXg, 2)} fuera (${insightNumber(away.matches, 0)} partidos). Es una diferencia observada, no prueba de que jugar en casa la haya causado.`,
+    );
+  }
+  if (opponentCounts.length > 1) {
+    contextParts.push(
+      `Rivales: hay entre ${insightNumber(Math.min(...opponentCounts), 0)} y ${insightNumber(Math.max(...opponentCounts), 0)} partidos por rival; algunas comparaciones tienen más respaldo que otras.`,
+    );
+  }
+  const context = contextParts.length
+    ? contextParts.join("\n\n")
+    : "No hay datos de contexto o posesiones para los filtros actuales.";
+
+  const playerRows = scope(report.player_summary);
+  let players;
+  if (playerId === "all") {
+    const playerCount = new Set(playerRows.map((row) => row.player_id).filter(Boolean)).size;
+    const rankedPlayers = new Map();
+    playerRows.forEach((row) => {
+      const matches = Number(row.matches) || 0;
+      if (!row.player_id || matches < 5) return;
+      const player = rankedPlayers.get(row.player_id) || {
+        player: row.player, position: row.position, matches: 0, progressivePasses: 0, xg: 0,
+      };
+      player.matches += matches;
+      player.progressivePasses += Number(row.progressive_passes) || 0;
+      player.xg += Number(row.xg) || 0;
+      rankedPlayers.set(row.player_id, player);
+    });
+    const referencePlayer = [...rankedPlayers.values()]
+      .sort((a, b) =>
+        b.progressivePasses / b.matches - a.progressivePasses / a.matches
+      )[0];
+    players = referencePlayer
+      ? `Hay ${insightNumber(playerCount, 0)} jugadores con datos. Como referencia estadística —no como “mejor jugador”—, ${referencePlayer.player} registra más pases progresivos por partido entre quienes aparecen en al menos cinco encuentros: ${insightNumber(referencePlayer.progressivePasses / referencePlayer.matches)} en ${insightNumber(referencePlayer.matches, 0)} partidos. Un pase progresivo avanza el balón según el registro; no mide por sí solo la calidad total del jugador. La actividad se agrupa en ventanas de cinco minutos, no en minutos exactos.`
+      : `Hay ${insightNumber(playerCount, 0)} jugadores con datos, pero la muestra no permite destacar a alguien con una base mínima de cinco partidos. La actividad se agrupa en ventanas de cinco minutos, no en minutos exactos jugados.`;
+  } else {
+    const selectedRows = playerRows.filter((row) => row.player_id === playerId);
+    if (!selectedRows.length) {
+      players = "No hay métricas individuales para el jugador seleccionado con estos filtros.";
+    } else {
+      const player = selectedRows[0];
+      const matches = selectedRows.reduce((sum, row) => sum + (Number(row.matches) || 0), 0);
+      const passes = selectedRows.reduce((sum, row) => sum + (Number(row.passes) || 0), 0);
+      const progressivePasses = selectedRows.reduce((sum, row) =>
+        sum + (Number(row.progressive_passes) || 0), 0);
+      const xg = selectedRows.reduce((sum, row) => sum + (Number(row.xg) || 0), 0);
+      const windows = selectedRows.reduce((sum, row) => sum + (Number(row.active_windows) || 0), 0);
+      const playerConnections = (report.pass_network || [])
+        .filter((row) =>
+          matchesModelScope(row, team, stage)
+          && (row.player === player.player || row.receiver === player.player)
+        )
+        .reduce((connections, row) => {
+          const teammate = row.player === player.player ? row.receiver : row.player;
+          if (!teammate || teammate === player.player) return connections;
+          const connection = connections.get(teammate) || { name: teammate, passes: 0, matches: new Set() };
+          connection.passes += Number(row.passes) || 0;
+          if (row.match_id != null) connection.matches.add(row.match_id);
+          connections.set(teammate, connection);
+          return connections;
+        }, new Map());
+      const mostConnected = [...playerConnections.values()]
+        .sort((a, b) => b.passes - a.passes)[0];
+      players = matches > 0
+        ? `${player.player} aparece en ${insightNumber(matches, 0)} partidos, con ${insightNumber(passes / matches)} pases y ${insightNumber(progressivePasses / matches)} progresivos por partido; suma ${insightNumber(xg / matches, 2)} xG por partido. La red registra más pases con ${mostConnected?.name || "ningún compañero"} (${insightNumber(mostConnected?.passes || 0, 0)} pases en ${insightNumber(mostConnected?.matches.size || 0, 0)} partidos), pero volumen de pase no equivale a entendimiento o calidad. El mapa agrupa ${insightNumber(windows, 0)} ventanas de cinco minutos y no informa los minutos exactos jugados.`
+        : "No hay suficientes partidos con datos individuales para calcular promedios.";
+    }
+  }
+
+  const goals = filterTeamGoals(report.shot_map || [], team, stage);
+  const setPieceRows = filterTeamSetPieces(report.set_piece_summary || [], team, stage);
+  const pieceGroups = new Map();
+  setPieceRows.forEach((row) => {
+    const key = `${row.team}|${row.role}|${row.pattern}`;
+    const group = pieceGroups.get(key) || {
+      team: row.team, role: row.role, pattern: row.pattern, possessions: 0, xg: 0,
+    };
+    group.possessions += Number(row.possessions) || 0;
+    group.xg += Number(row.xg) || 0;
+    pieceGroups.set(key, group);
+  });
+  const topPieceByRole = (role) => [...pieceGroups.values()]
+    .filter((row) => row.role === role && row.possessions > 0)
+    .map((row) => ({ ...row, xgPerPossession: row.xg / row.possessions }))
+    .sort((a, b) => b.xgPerPossession - a.xgPerPossession)[0];
+  const attackPiece = topPieceByRole("offensive");
+  const defensePiece = topPieceByRole("defensive");
+  const pieceParts = [];
+  if (attackPiece) {
+    pieceParts.push(
+      `En ataque, ${attackPiece.team} · ${insightPatternNames[attackPiece.pattern] || attackPiece.pattern} promedia ${insightNumber(attackPiece.xgPerPossession, 3)} xG por secuencia (${insightNumber(attackPiece.possessions, 0)} secuencias)`,
+    );
+  }
+  if (defensePiece) {
+    pieceParts.push(
+      `Al defender, las secuencias rivales de ${insightPatternNames[defensePiece.pattern] || defensePiece.pattern} generaron ${insightNumber(defensePiece.xgPerPossession, 3)} xG por secuencia (${insightNumber(defensePiece.possessions, 0)} secuencias)`,
+    );
+  }
+  const collective = `${insightNumber(goals.length, 0)} goles aparecen en el mapa colectivo para estos filtros. ${pieceParts.length ? `${pieceParts.join(". ")}.` : "No hay datos de balón parado para los filtros actuales."} xG es una estimación de la calidad de los tiros: no es el número de goles anotados. Las secuencias de balón parado pueden incluir acciones posteriores al saque, y las coordenadas del mapa no indican hacia qué portería se atacaba.`;
+
+  return {
+    scope: {
+      analysis: `El archivo contiene ${insightNumber(reportMatchCount, 0)} partidos; ${insightNumber(matchCount, 0)} pertenecen a las tres etapas que aparecen en el recorrido longitudinal y los otros quedan fuera de esa comparación. Las etiquetas “Pre-América”, “América campeón” y “Post campeonatos” sirven para ordenar la historia, pero no certifican el torneo de cada encuentro. Las cifras describen lo que se registró: una diferencia entre etapas no prueba que Jardine la haya causado, porque también pueden cambiar rivales, jugadores y circunstancias del partido.`,
+      action: "Empieza con la vista completa para conocer el panorama y después filtra un solo equipo y una etapa para comparar partidos parecidos. Toma la etapa previa como referencia, no como una comparación idéntica. Si una cifra te interesa, comprueba en la tabla partido por partido que el patrón se repita antes de proponer un cambio.",
+    },
+    panorama: {
+      analysis: panorama,
+      action: panoramaComparisons.length > 1
+        ? `Revisa en video varias posesiones que terminaron en tiro de las etapas con valores más alto y más bajo. Pregunta si el remate llegó desde una posición cercana y con ventaja o desde lejos y con presión; luego mide tiros dentro del área y xG por remate. La meta no es tirar más, sino crear intentos mejores. Repite la comparación con rivales y marcadores similares.`
+        : "Elige varios partidos de esta etapa y clasifica sus remates en dos grupos: tiros claros cerca del arco y tiros lejanos o forzados. Revisa qué pase o movimiento permitió llegar a cada grupo. Después prueba en entrenamiento una forma de repetir las llegadas más claras y comprueba si sube el xG por remate, no solo el total de tiros.",
+    },
+    identity: {
+      analysis: identity,
+      action: "En video, sigue una jugada de cada tipo: un avance progresivo, una acción defensiva y una recuperación seguida de ataque. Anota qué ocurrió antes y después, y cuál terminó en una ocasión. Prueba mantener la estructura que genera avances útiles; no cambies formación o presión solo porque un conteo sea alto. Evalúa cualquier ajuste en partidos comparables.",
+    },
+    context: {
+      analysis: context,
+      action: "Compara primero partidos en situaciones parecidas: mismo estado del marcador, localía y duración observada. Separa luego los rivales y revisa la tabla individual para comprobar si el promedio está impulsado por uno o dos encuentros. Si una diferencia persiste en varias comparaciones, úsala para preparar un plan distinto cuando el equipo vaya ganando, empatando o perdiendo.",
+    },
+    players: {
+      analysis: players,
+      action: playerId === "all"
+        ? "Selecciona un jugador para ver sus zonas de actividad y a quién le pasa el balón. Usa la estadística como punto de partida, no como ranking de quién juega mejor: la base no incluye minutos exactos y los totales dependen de cuántos partidos disputó."
+        : "Revisa en video algunas conexiones más frecuentes y algunas secuencias sin conexión registrada: ¿el pase ayudó a avanzar, creó una ocasión o fue una salida segura? Compara partidos y posición; antes de valorar el esfuerzo o rendimiento, confirma los minutos jugados y la función asignada, datos que esta base no mide con exactitud.",
+    },
+    collective: {
+      analysis: collective,
+      action: "Para atacar, revisa los saques que generaron más xG y registra quién toca primero, desde dónde sale el tiro y qué segunda jugada aparece. Para defender, mide tiros y xG permitidos por saque, incluida la continuación. Prueba una variante ofensiva y un ajuste defensivo por separado; no asignes marcas individuales solo con este mapa.",
+    },
+  };
 }
 
 function filterPlayerActivity(rows, team, stage, playerId) {
@@ -2570,6 +3753,11 @@ function renderDashboard(report) {
   renderMetadata(report.metadata || {}, report.matches || []);
   renderPlayerSelect(report, team, stage);
   const playerId = document.querySelector("#player-filter").value;
+  const commentaries = buildSectionCommentaries(report, team, stage, playerId);
+  Object.entries(commentaries).forEach(([section, commentary]) => {
+    document.querySelector(`#${section}-insight-analysis`).textContent = commentary.analysis;
+    document.querySelector(`#${section}-insight-action`).textContent = commentary.action;
+  });
 
   renderStageSummary(report.stage_summary, team, stage);
   renderFormation(report.formation_summary, team, stage);

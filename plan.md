@@ -8,7 +8,10 @@
 - [x] Proxy territorial etiquetado, sin presentarlo como Field Tilt.
 - [x] Exportaciones CSV/JSON y contrato `report_data.json`.
 - [x] Dashboard con variabilidad, territorio, defensa y progresión.
+- [x] Comentarios interpretativos por sección, ligados a filtros y métricas.
+- [x] Ampliación de comentarios en lenguaje sencillo con sugerencias prácticas y límites explícitos por sección.
 - [x] Pruebas dirigidas y validación de sintaxis.
+- [x] Integración en el dashboard de la evidencia auditada de `Arctix_Entrega_Integral`, con muestras y límites separados, comparación AP23–CL25 y propuestas prácticas.
 - [ ] Regenerar con la base real cuando `hackathon.db` esté disponible.
 
 ## Problema y enfoque

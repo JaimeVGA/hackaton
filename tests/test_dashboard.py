@@ -26,6 +26,42 @@ def test_dashboard_has_static_entrypoint_and_data_sources():
     assert "report_data.json" in script
 
 
+def test_dashboard_adds_team_analysis_and_measurable_recommendations():
+    html = (DASHBOARD / "index.html").read_text(encoding="utf-8")
+
+    assert 'href="#hallazgos">HALLAZGOS Y PROPUESTA</a>' in html
+    assert 'id="hallazgos"' in html
+    assert "51 partidos de liga regular" in html
+    assert "muestra distinta de los 181 partidos longitudinales" in html
+    assert "31,75 → 24,73" in html
+    assert "0,130 → 0,101" in html
+    assert "7 de 22" in html and "40 de 74" in html
+    assert "Pumas, Cruz Azul y Necaxa" in html
+    assert "44 / 81" in html
+    assert "npxG por posesión" in html
+    assert "hipótesis de trabajo" in html
+    assert "La prioridad es convertir la circulación en ocasiones de mayor calidad" in html
+
+
+def test_dashboard_adds_audited_integral_evidence_without_merging_samples():
+    html = (DASHBOARD / "index.html").read_text(encoding="utf-8")
+
+    assert 'href="#evidencia-ampliada">EVIDENCIA AMPLIADA</a>' in html
+    assert 'id="evidencia-ampliada"' in html
+    assert "<strong>183</strong>" in html and "partidos únicos en el inventario de la entrega" in html
+    assert "<strong>182</strong>" in html and "partidos seleccionados por metadatos" in html
+    assert "<strong>144</strong>" in html and "partidos dentro de la ventana oficial" in html
+    assert "<strong>66</strong>" in html and "partidos de liga regular" in html
+    assert "51 partidos" in html and "AP23, CL24 y AP24" in html
+    assert "0,130" in html and "0,127" in html and "0,101" in html and "0,114" in html
+    assert "intervalo exploratorio incluye cero" in html
+    assert "0,128" in html and "0,106" in html and "0,141" in html and "0,075" in html
+    assert "84" in html and "76" in html and "3,05" in html and "2,49" in html
+    assert "23,2%" in html and "25,6%" in html
+    assert "no contiene fotogramas 360 locales" in html
+    assert "La caída de AP24" in html and "no es una tendencia continua." in html
+
+
 def test_dashboard_presents_all_filtered_matches_and_unique_players():
     script = (DASHBOARD / "app.js").read_text(encoding="utf-8")
     model = (DASHBOARD / "ui-model.mjs").read_text(encoding="utf-8")
@@ -97,6 +133,55 @@ def test_dashboard_translates_raw_stage_names_and_avoids_statistical_shorthand()
     assert "n=${" not in script
     assert "partidos${sampleHint}" in script
     assert "La barra muestra el rango central" in (DASHBOARD / "index.html").read_text(encoding="utf-8")
+
+
+def test_dashboard_adds_filter_aware_commentary_for_each_analytics_section():
+    result = run_ui_model(
+        'import fs from "node:fs";'
+        'import { buildSectionCommentaries } from "./dashboard/ui-model.mjs";'
+        'const report=JSON.parse(fs.readFileSync("./dashboard/report_data.json","utf8"));'
+        'const all=buildSectionCommentaries(report,"all","all","all");'
+        'const america=buildSectionCommentaries(report,"América","america_championship_context","47467");'
+        'console.log(JSON.stringify({all,america}));'
+    )
+    all_insights = result["all"]
+    america_insights = result["america"]
+
+    assert set(all_insights) == {"scope", "panorama", "identity", "context", "players", "collective"}
+    assert all(set(insight) == {"analysis", "action"} for insight in all_insights.values())
+    assert all(len(insight["analysis"].split()) >= 45 for insight in all_insights.values())
+    assert all(len(insight["action"].split()) >= 20 for insight in all_insights.values())
+    assert "183 partidos" in all_insights["scope"]["analysis"]
+    assert "181 pertenecen" in all_insights["scope"]["analysis"]
+    assert "xG por remate" in all_insights["panorama"]["analysis"]
+    assert "pases progresivos" in all_insights["identity"]["analysis"]
+    assert "coordenada" in all_insights["identity"]["analysis"]
+    assert "4-2-3-1" in all_insights["identity"]["analysis"]
+    assert "proxy territorial" in all_insights["identity"]["analysis"]
+    assert "cambios de formación" in all_insights["identity"]["analysis"]
+    assert "posesiones" in all_insights["context"]["analysis"]
+    assert "filas" in all_insights["context"]["analysis"]
+    assert "en casa" in all_insights["context"]["analysis"]
+    assert "fuera" in all_insights["context"]["analysis"]
+    assert "referencia estadística" in all_insights["players"]["analysis"]
+    assert "Álvaro Fidalgo Fernández" in all_insights["players"]["analysis"]
+    assert "goles" in all_insights["collective"]["analysis"]
+    assert "xG por secuencia" in all_insights["collective"]["analysis"]
+    assert "Álvaro Fidalgo Fernández" in america_insights["players"]["analysis"]
+    assert "70 partidos" in america_insights["panorama"]["analysis"]
+    assert "xG por remate" in america_insights["panorama"]["analysis"]
+
+    html = (DASHBOARD / "index.html").read_text(encoding="utf-8")
+    for insight_id in (
+        "scope-insight",
+        "panorama-insight",
+        "identity-insight",
+        "context-insight",
+        "players-insight",
+        "collective-insight",
+    ):
+        assert f'id="{insight_id}-analysis"' in html
+        assert f'id="{insight_id}-action"' in html
 
 
 def test_player_positions_are_shown_in_spanish():

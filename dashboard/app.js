@@ -3,6 +3,7 @@ import {
   filterTeamGoals,
   filterTeamSetPieces,
   formatFormation,
+  buildSectionCommentaries,
   aggregatePlayerPassConnections,
   uniquePlayers,
 } from "./ui-model.mjs";
@@ -729,6 +730,11 @@ function renderDashboard(report) {
   renderMetadata(report.metadata || {}, report.matches || []);
   renderPlayerSelect(report, team, stage);
   const playerId = document.querySelector("#player-filter").value;
+  const commentaries = buildSectionCommentaries(report, team, stage, playerId);
+  Object.entries(commentaries).forEach(([section, commentary]) => {
+    document.querySelector(`#${section}-insight-analysis`).textContent = commentary.analysis;
+    document.querySelector(`#${section}-insight-action`).textContent = commentary.action;
+  });
 
   renderStageSummary(report.stage_summary, team, stage);
   renderFormation(report.formation_summary, team, stage);
