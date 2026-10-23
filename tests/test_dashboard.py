@@ -274,6 +274,13 @@ def test_distribution_index_is_a_self_contained_offline_dashboard():
     assert result.returncode == 0, result.stderr
 
 
+def test_vercel_serves_the_standalone_dist_directory():
+    config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+
+    assert config["outputDirectory"] == "dist"
+    assert (ROOT / config["outputDirectory"] / "index.html").is_file()
+
+
 def test_dashboard_has_no_external_runtime_dependencies():
     html = (DASHBOARD / "index.html").read_text(encoding="utf-8")
     script = (DASHBOARD / "app.js").read_text(encoding="utf-8")
