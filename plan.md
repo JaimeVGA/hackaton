@@ -1,170 +1,240 @@
-# Plan: historia táctica de André Jardine con datos
+# Plan de ampliación del análisis táctico de Jardine
+
+## Progreso
+
+- [x] Pipeline con métricas por partido, etapa y contexto.
+- [x] Variabilidad con `n`, media, desviación y cuantiles.
+- [x] Progresión por zona/carril y perfil defensivo observable.
+- [x] Proxy territorial etiquetado, sin presentarlo como Field Tilt.
+- [x] Exportaciones CSV/JSON y contrato `report_data.json`.
+- [x] Dashboard con variabilidad, territorio, defensa y progresión.
+- [x] Pruebas dirigidas y validación de sintaxis.
+- [ ] Regenerar con la base real cuando `hackathon.db` esté disponible.
 
 ## Problema y enfoque
 
-Construir una narrativa basada en eventos de StatsBomb que explique cómo evolucionó
-el equipo de André Jardine antes de llegar al América, durante la etapa de los
-tres campeonatos consecutivos y después de ellos. El foco será explicar las
-decisiones y principios de juego que ayudaron a ganar, no solo describir
-resultados.
+Completar los componentes faltantes de la rúbrica usando únicamente la
+información disponible en `hackathon.db`, sin implementar OBV por ahora. El
+trabajo ampliará el pipeline reproducible, documentará qué métricas son
+oficiales y cuáles son proxies operativos, y hará visibles los resultados en el
+dashboard.
 
-La base disponible es `hackathon.db`, una SQLite con 183 partidos y eventos
-detallados. La ventana temporal identificada va de 2022 a 2026; América aparece
-en 134 partidos, pero la tabla `partidos` tiene `competencia` y `fecha` sin
-información útil para separar automáticamente los torneos. El análisis deberá
-usar el identificador del partido y reglas documentadas para definir etapas,
-validando cualquier fecha o campeonato contra una fuente confiable o una tabla
-de configuración explícita.
+La regla central será no inventar información ausente: Field Tilt se reportará
+como proxy territorial si no puede normalizarse la dirección de ataque; el
+balón parado defensivo se analizará mediante acciones y resultados observables,
+no mediante asignaciones de marca que la base no contiene.
 
-## Alcance acordado
+## Alcance
 
-- Usar toda la ventana disponible como contexto de evolución.
-- Dar prioridad narrativa a la etapa del América y sus campeonatos.
-- Tratar el periodo previo y el posterior como comparación breve, no como
-  historias independientes.
-- No afirmar causalidad absoluta; presentar asociaciones medibles entre
-  decisiones tácticas, patrones de juego y rendimiento.
-- Usar Atlético de San Luis como línea base previa y América como etapa
-  principal; el periodo posterior será contexto exploratorio.
-- Explicar el esquema de juego como estructura, principios ofensivos,
-  principios defensivos y adaptación al contexto, no como una sola formación.
-- Dirigir la presentación a un jurado mixto, traduciendo cada métrica a una
-  idea futbolística clara.
-- Priorizar tres a cinco hallazgos respaldados por varias métricas y una
-  cantidad suficiente de partidos.
-- Usar fuentes externas solo para validar fechas, campeonatos y contexto
-  histórico mínimo; las conclusiones tácticas deben salir de `hackathon.db`.
-- Explorar las distribuciones antes de fijar umbrales como presión alta o
-  recuperación alta.
+### Incluido
 
-## Plan de trabajo
+- Variabilidad y consistencia por partido, etapa, marcador, localía y rival.
+- Organización defensiva mediante volumen, zonas y tipo de acciones defensivas.
+- Roles y uso de jugadores mediante ventanas, posiciones, formaciones y
+  sustituciones.
+- Balón parado ofensivo y defensivo observable.
+- Construcción y progresión por zonas, carriles y patrones de pase.
+- Proxy de control territorial documentado, sin llamarlo Field Tilt oficial.
+- Cambios posteriores a sustituciones y cambios de sistema cuando exista
+  suficiente información.
+- Nuevas exportaciones CSV/JSON, documentación, dashboard y pruebas.
 
-1. **Auditar y normalizar la base**
-   - Documentar tablas, llaves, cobertura temporal, equipos y calidad.
-   - Relacionar `eventos`, `pases`, `acciones_defensivas`, `transiciones`,
-     `remates`, `estado_partido`, `formaciones_tacticas` y
-     `features_jugador_ventana`.
-   - Resolver nombres de equipos, partidos duplicados, partidos sin torneo y
-     reglas de orientación del campo.
-   - Crear una tabla o archivo de configuración de etapas y torneos, sin
-     modificar los datos crudos.
+### Excluido
 
-2. **Definir la unidad de análisis y los contextos**
-   - Nivel partido para comparar tendencias.
-   - Nivel posesión para estudiar progresión, recuperación y transición.
-   - Nivel ventana de cinco minutos para observar ajustes según marcador.
-   - Etiquetar rival, localía, estado del marcador, periodo del partido,
-     formación inicial y cambios de formación.
+- OBV o cualquier modelo de valor de posesión.
+- Asignaciones individuales de marcaje en balón parado.
+- Afirmaciones de causalidad o de intención del entrenador no observables.
+- Modificación de los datos crudos de SQLite.
 
-3. **Medir la fase ofensiva**
-   - Volumen y dirección de la posesión: pases, progresivos, longitud,
-     cambios de orientación, pases clave y entradas al último tercio.
-   - Progresión por zonas y carriles; identificar si el equipo construye por
-     dentro, por fuera o mediante cambios de orientación.
-   - Producción y calidad de ocasiones: tiros, xG, xG por tiro, secuencias
-     previas al tiro y recuperaciones que terminan en tiro.
-   - Medir la variación de estos patrones cuando el equipo va ganando,
-     empatando o perdiendo.
+## Enfoque técnico
 
-4. **Medir la fase defensiva y las transiciones**
-   - PPDA con una definición reproducible y explícita.
-   - Altura y distribución territorial de presiones, recuperaciones,
-     intercepciones, duelos y despejes.
-   - Recuperaciones altas y su conversión en tiros o xG.
-   - Velocidad y resultado de transiciones después de recuperar o perder el
-     balón.
-   - Comparar presión, bloque y riesgo defensivo por estado del partido.
+1. Auditar las columnas y cobertura ya disponibles para evitar duplicar
+   métricas existentes.
+2. Añadir funciones pequeñas y testeables al pipeline de Pandas:
+   progresión zonal, control territorial proxy, perfil defensivo, balón parado,
+   consistencia/variabilidad y respuesta posterior a decisiones.
+3. Exportar cada agregado con denominadores, tamaño de muestra y etiquetas de
+   limitación cuando corresponda.
+4. Actualizar `docs/data_dictionary.md`, `docs/analysis_report.md` y `plan.md`
+   del repositorio con definiciones y límites.
+5. Mostrar en el dashboard las nuevas salidas, manteniendo la interfaz sencilla
+   y sin dependencias externas.
+6. Ejecutar pruebas unitarias, regenerar salidas con la base real y verificar
+   que los conteos y llaves sean consistentes.
 
-5. **Analizar las decisiones de Jardine**
-   - Cambios de sistema y estructura usando `formaciones_tacticas`.
-   - Sustituciones, minuto de ajuste y respuesta posterior en volumen,
-     territorio, ocasiones y control del partido.
-   - Identificar patrones recurrentes: por ejemplo, pasar de 4-2-3-1 a otra
-     estructura, proteger una ventaja o aumentar presencia ofensiva.
-   - Separar decisiones planificadas de reacciones al resultado para no
-     interpretar cualquier cambio como una intención táctica.
+## Entregables esperados
 
-6. **Construir comparaciones y controles**
-   - Comparar etapas pre-América, América durante campeonatos y post-América.
-   - Comparar partidos ganados, empatados y perdidos, además de rivales de
-     distinto nivel cuando sea posible.
-   - Reportar tamaños de muestra y evitar promedios engañosos por diferencias
-     de partidos disponibles.
-   - Calcular intervalos o medidas de dispersión simples para mostrar si una
-     diferencia es estable o depende de pocos partidos.
+- Pipeline ampliado en `jardine_analysis/pipeline.py`.
+- Exportaciones nuevas o ampliadas en `outputs/`.
+- Pruebas de cada métrica nueva y de sus casos límite.
+- Diccionario de datos y reporte narrativo actualizados.
+- Dashboard con secciones para variabilidad, control territorial proxy,
+  organización defensiva y balón parado.
+- Plan del repositorio actualizado con progreso y limitaciones.
 
-7. **Convertir métricas en una historia**
-   - Elegir tres a cinco hallazgos defendibles, cada uno con pregunta,
-     métrica, visualización, evidencia y conclusión.
-   - Proponer una secuencia narrativa: punto de partida, transformación,
-     decisiones durante los campeonatos y legado/evolución posterior.
-   - Preparar tablas limpias en CSV/JSON y un dataset agregado para consumo de
-     la interfaz de Joel.
-   - Documentar definiciones, filtros, limitaciones y trazabilidad de cada
-     hallazgo.
+## Decisiones técnicas iniciales
 
-8. **Validar**
-   - Ejecutar pruebas de conteos, llaves, rangos espaciales y ausencia de
-     duplicados.
-   - Revisar manualmente partidos representativos de cada etapa.
-   - Contrastar que las visualizaciones y conclusiones coincidan con los
-     registros subyacentes.
+- Los promedios se acompañarán de `matches` y, cuando sea útil, dispersión
+  (`std` o rango intercuartílico) para no ocultar tamaños de muestra.
+- La consistencia se medirá como estabilidad entre partidos dentro de una
+  etapa; la variabilidad se medirá como dispersión y cambios por contexto.
+- El proxy territorial usará eventos espaciales comparables y se etiquetará
+  explícitamente como aproximación por la falta de orientación normalizada.
+- El balón parado defensivo usará presiones, despejes, bloqueos, intercepciones,
+  recuperaciones, tiros y goles asociados a patrones de reanudación.
+- Si una métrica no tiene cobertura suficiente, se exportará como no disponible
+  con la razón documentada, no como cero.
 
-## Modelo de dominio acordado
+## Validación
 
-- **Hipótesis:** el tricampeonato se explica mejor por la combinación de
-  flexibilidad estructural, control territorial y adaptación al marcador que
-  por una formación única.
-- **Decisión observable:** cambio medible en formación, sustitución, presión,
-  progresión, transición o comportamiento según el marcador; no equivale a una
-  intención interna del entrenador.
-- **Partido representativo:** partido seleccionado mediante reglas transparentes
-  por su evidencia de cambio o patrón táctico, no solo por atractivo visual.
-- **Salida analítica:** agregados por etapa, métricas por partido y acciones
-  destacadas para consumo de la interfaz.
+- Pruebas dirigidas y suite completa.
+- Regeneración de todos los outputs desde `hackathon.db`.
+- Comprobación de que no se pierdan los 183 partidos focales.
+- Revisión de valores nulos, denominadores cero, rangos espaciales y
+  duplicados.
+- Smoke test del dashboard mediante servidor HTTP local.
+# Plan de implementación: análisis longitudinal de Jardine
 
-## Primeros entregables técnicos
+## Problema y enfoque
 
-- `data_dictionary.md` o equivalente con tablas, columnas y definiciones.
-- Configuración de etapas/torneos y reglas de inclusión.
-- Pipeline reproducible de Pandas que lea SQLite y genere métricas.
-- CSV/JSON de métricas por partido, etapa y contexto.
-- Notebook o reporte exploratorio con las primeras comparaciones.
-- Catálogo de visualizaciones y hallazgos candidatos para la presentación.
+Implementar todo lo que pueda sostenerse con la base actual `hackathon.db` para
+explicar la evolución táctica de André Jardine a través de múltiples partidos,
+no de un encuentro aislado. El análisis debe identificar patrones recurrentes,
+tendencias del entrenador, ajustes según rival/marcador/localía y diferencias
+entre partidos o momentos del juego.
 
-## Progreso de implementación
+La solución conservará el pipeline reproducible en Pandas/SQLite, usará
+métricas observables y proxies claramente etiquetados, y entregará datos
+tabulados para la interfaz. No se modificarán los datos crudos ni se afirmará
+causalidad cuando la base solo permita asociaciones antes/después.
 
-- Auditoría inicial completada: 183 partidos, 610390 eventos y tablas tácticas
-  disponibles.
-- Pipeline inicial implementado en `jardine_analysis/pipeline.py`.
-- Pruebas unitarias para clasificación, PPDA, métricas de partido y
-  exportaciones.
-- Exportaciones generadas en `outputs/`: CSV, JSON, reglas de etapas y
-  resumen por formación y contexto.
-- Reporte inicial en `docs/analysis_report.md` y diccionario de datos en
-  `docs/data_dictionary.md`.
-- Pendiente: validar torneos con una fuente histórica, conectar decisiones con
-  cambios posteriores en el comportamiento del equipo, y construir
-  visualizaciones finales.
+## Límites acordados
 
-## Revisión final de esta primera iteración
+- Incluir toda la muestra disponible y comparar etapas, equipos y contextos.
+- Mantener como eje narrativo la evolución de Jardine, con América como etapa
+  principal y Atlético de San Luis como referencia previa.
+- Analizar rival, marcador, localía, periodo del partido, formación y cambios
+  observables cuando exista cobertura.
+- Excluir OBV.
+- No presentar el proxy territorial como Field Tilt oficial.
+- No inferir marcaje individual, defensa zonal/man-to-man, intención interna ni
+  causalidad de una sustitución.
+- No modificar `hackathon.db`.
+- Tratar `partidos.fecha` y `partidos.competencia` como datos incompletos y
+  conservar la clasificación de etapas como contexto documentado.
 
-- Sin problemas importantes en el pipeline después de corregir la resolución
-  del rival en partidos de visita y el conteo de cambios reales de formación.
-- Riesgo menor pendiente: si dos formaciones distintas aparecen exactamente al
-  mismo minuto y segundo, la formación inicial se toma por orden de origen;
-  debe marcarse como ambigua en una iteración posterior.
+## Todos de implementación
 
-## Riesgos y decisiones pendientes del implementador
+1. **Consolidar la fuente oficial**
+   - Integrar la ampliación analítica en la rama de trabajo principal.
+   - Revisar cambios existentes y conservar solo artefactos relacionados.
+   - Decidir que `dist/` es la interfaz disponible mientras no exista el
+     proyecto fuente Angular.
 
-- La competencia no está poblada en `partidos`; no se debe inferir el torneo
-  únicamente del año.
-- La etiqueta de “tres campeonatos consecutivos” debe quedar respaldada por
-  una asignación de partidos verificable.
-- Las coordenadas parecen estar en una escala de 120x80 en las tablas
-  derivadas; se debe comprobar orientación y normalización antes de calcular
-  altura de bloque o recuperación alta.
-- PPDA y métricas de transición requieren declarar denominadores, exclusiones y
-  manejo de eventos sin resultado.
-- xG ya existe por remate; el plan debe usarlo como variable disponible y no
-  presentar un modelo nuevo como si fuera oficial de StatsBomb.
+2. **Auditar y normalizar la muestra**
+   - Validar los 183 partidos focales, equipos, identificadores y duplicados.
+   - Documentar cobertura, campos ausentes, periodo y reglas de etapas.
+   - Validar rangos espaciales y declarar la limitación de orientación.
+
+3. **Completar métricas longitudinales por partido**
+   - Mantener pases, progresión, tiros, goles, xG, PPDA, presión,
+     recuperaciones y transiciones.
+   - Añadir o reforzar denominadores, tamaños de muestra, medias, dispersión y
+     valores no disponibles.
+   - Exportar métricas por partido, etapa y contexto.
+
+4. **Medir patrones ofensivos recurrentes**
+   - Comparar construcción, progresión por zonas/carriles, cambios de
+     orientación, creación de ocasiones y secuencias de tiro.
+   - Separar volumen de eficiencia y evitar interpretar zonas brutas como
+     tercios ofensivos sin normalización.
+
+5. **Medir patrones defensivos y transiciones**
+   - Analizar PPDA operativo, presiones, recuperaciones, intercepciones,
+     despejes, bloqueos, duelos y riesgo observable.
+   - Relacionar recuperaciones con tiros/xG posteriores.
+   - Comparar comportamientos por marcador y tramo del partido.
+
+6. **Analizar ajustes contextuales**
+   - Cruzar métricas con rival, localía, resultado, estado del marcador,
+     periodo y formación cuando estén disponibles.
+   - Medir diferencias entre partidos y dentro del partido mediante ventanas.
+   - Reportar tamaños de muestra para cada comparación y marcar celdas
+     insuficientes como no disponibles.
+
+7. **Analizar decisiones observables**
+   - Resumir formaciones iniciales, cambios de sistema y sustituciones.
+   - Implementar comparación descriptiva antes/después de sustituciones y
+     cambios, controlando ventana, marcador y duración.
+   - Etiquetar el resultado como asociación descriptiva, no efecto causal.
+
+8. **Completar roles, balón parado y consistencia**
+   - Usar posiciones, ventanas de cinco minutos, participación y formaciones
+     para describir uso de jugadores.
+   - Resumir balón parado ofensivo/defensivo mediante acciones y resultados
+     observables, sin asignaciones de marca.
+   - Presentar consistencia con n, media, desviación o cuantiles cuando sea
+     posible, sin ocultar variabilidad entre partidos.
+
+9. **Actualizar contrato de datos y documentación**
+   - Mantener CSV/JSON reproducibles y `report_data.json` consistente.
+   - Actualizar `docs/data_dictionary.md`, `docs/analysis_report.md`,
+     `GLOSSARY.md` y `plan.md`.
+   - Para cada hallazgo documentar población, periodo, denominador, baseline,
+     incertidumbre, limitación y comando de reproducción.
+
+10. **Actualizar la interfaz oficial**
+    - Mostrar la historia por etapas y contextos, no solo una tabla de
+      partidos.
+    - Integrar visualizaciones/tablas de ofensiva, defensa, transiciones,
+      decisiones, variabilidad y balón parado.
+    - Migrar las pruebas que aún apuntan al dashboard borrador para validar
+      `dist/`, o restaurar explícitamente el dashboard solo si se decide que
+      sigue siendo una interfaz soportada.
+    - Evitar edición manual del bundle Angular sin fuente.
+
+11. **Validar y preparar la presentación**
+    - Ejecutar pruebas unitarias y contrato de salidas.
+    - Regenerar outputs desde `hackathon.db`.
+    - Comprobar 183 partidos únicos, llaves, rangos, nulos y denominadores.
+    - Ejecutar smoke test HTTP de `dist/` y revisar que las secciones sean
+      visibles y no estén ocultas por caché o por una carga parcial.
+    - Seleccionar tres a cinco hallazgos longitudinales defendibles para el
+      jurado, cada uno con evidencia y limitación explícita.
+
+## Entregables
+
+- Pipeline reproducible ampliado.
+- CSV/JSON por partido, etapa y contexto.
+- `report_data.json` como contrato de consumo.
+- Documentación metodológica y glosario actualizado.
+- Interfaz `dist/` con la historia longitudinal visible.
+- Suite de pruebas verde y comandos de reproducción.
+- Catálogo final de hallazgos con población, denominador y límites.
+
+## Decisiones técnicas del implementador
+
+- Se usará el checkout principal como destino de integración, confirmado por el
+  usuario.
+- Se tratará el worktree `expanded-tactical-analysis` como referencia de
+  cambios ya realizados, no como motivo para duplicar funciones.
+- Los valores faltantes se mostrarán como `—`/no disponible, nunca como cero
+  implícito.
+- La interfaz priorizará tablas y comparaciones honestas sobre efectos
+  decorativos.
+- Si una dimensión no tiene evidencia suficiente, se conservará como brecha
+  documentada en lugar de fabricar una métrica.
+- Se mantienen las exclusiones confirmadas: OBV, Field Tilt oficial,
+  marcaje individual y causalidad no observable.
+
+## Riesgos y controles
+
+- **Orientación del ataque:** no convertir coordenadas brutas en zonas
+  direccionales sin una regla validada.
+- **Etapas históricas:** no llamar campeonato a una etapa inferida solo por
+  año/equipo.
+- **Muestras pequeñas:** mostrar `n` y no generalizar desde pocos partidos.
+- **Causalidad:** describir asociaciones antes/después y ajustar por marcador
+  cuando sea posible.
+- **Interfaz compilada:** no prometer una integración Angular mantenible sin
+  recuperar `src/`, `angular.json` y `package.json`.

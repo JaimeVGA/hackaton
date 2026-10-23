@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img">
+  <rect width="720" height="180" rx="8" fill="#20352b"/>
+  <g fill="none" stroke="#d8f06b" stroke-opacity=".62" stroke-width="2">
+    <path d="M28 90h664M125 44v92M595 44v92"/>
+    <rect x="28" y="24" width="664" height="132" rx="5"/>
+    <rect x="28" y="57" width="88" height="66"/>
+    <rect x="604" y="57" width="88" height="66"/>
+    <circle cx="360" cy="90" r="42"/>
+    <path d="M116 90c44-62 87 62 132 0s88-62 132 0 88 62 132 0 88-62 132 0"/>
+  </g>
+  <g fill="#d8f06b">
+    <circle cx="116" cy="90" r="5"/>
+    <circle cx="248" cy="90" r="5"/>
+    <circle cx="380" cy="90" r="5"/>
+    <circle cx="512" cy="90" r="5"/>
+    <circle cx="644" cy="90" r="5"/>
+  </g>
+  <g fill="#f5f4ec" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">
+    <text x="36" y="168">RECUPERAR</text>
+    <text x="290" y="168">CIRCULAR</text>
+    <text x="586" y="168">FINALIZAR</text>
+  </g>
+</svg>

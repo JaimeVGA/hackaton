@@ -65,6 +65,11 @@ Dominio relativo de las zonas del campo donde el equipo ejecuta acciones,
 progresa, presiona, recupera y genera ocasiones.
 _Avoid_: posesión, dominio cuando solo se mida una de esas dimensiones.
 
+**Proxy territorial**:
+Cuota de eventos espaciales del equipo sobre ambos equipos usando `x_inicio >=
+60`, sin normalizar la dirección de ataque.
+_Avoid_: Field Tilt oficial, dominio territorial definitivo.
+
 **Transición**:
 Secuencia de acciones inmediatamente posterior a una recuperación o pérdida que
 describe cómo el equipo cambia entre defender y atacar, o viceversa.

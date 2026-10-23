@@ -1,0 +1,26 @@
+match_id,team,stage,high_pressures,high_recoveries,xg,goals
+Necaxa_vs_America_2024-09-22,América,america_championship_context,15,19,1.220424,1
+America_vs_Leon_2025-11-02,América,post_championship_context,61,19,1.187555,2
+America_vs_CruzAzul_2025-05-19,América,post_championship_context,25,18,2.062634,2
+America_vs_AtleticoSanLuis_2024-03-30,América,america_championship_context,40,18,1.100599,2
+AtleticoSanLuis_vs_America_2023-11-02,Atlético San Luis,pre_america,52,18,1.029026,0
+America_vs_AtleticoSanLuis_2022-02-06,América,america_championship_context,21,18,1.006809,2
+Atlas_vs_America_2024-03-03,América,america_championship_context,51,17,5.885143,5
+America_vs_PumasUNAM_2025-09-28,América,post_championship_context,28,17,3.411257,3
+Pachuca_vs_America_2025-05-08,América,post_championship_context,52,17,1.943988,0
+PumasUNAM_vs_AtleticoSanLuis_2023-04-09,Atlético San Luis,pre_america,27,17,1.805007,1
+Juarez_vs_America_2024-07-21,América,america_championship_context,33,17,1.626062,2
+America_vs_Queretaro_2024-01-21,América,america_championship_context,23,16,1.896738,2
+Queretaro_vs_AtleticoSanLuis_2022-03-18,Atlético San Luis,pre_america,21,16,1.878367,1
+Mazatlan_vs_America_2025-10-25,América,post_championship_context,23,16,1.64752,2
+America_vs_CruzAzul_2025-04-13,América,post_championship_context,35,16,0.961307,0
+America_vs_PumasUNAM_2026-05-03,América,post_championship_context,32,15,3.052072,3
+Leon_vs_America_2024-02-11,América,america_championship_context,20,15,2.422655,1
+America_vs_Pachuca_2024-05-12,América,america_championship_context,37,15,2.020608,1
+America_vs_TigresUANL_2023-12-18,América,america_championship_context,38,15,1.644148,3
+PumasUNAM_vs_America_2024-04-21,América,america_championship_context,35,15,1.297596,1
+PumasUNAM_vs_America_2026-05-11,América,post_championship_context,31,14,3.106017,3
+America_vs_SantosLaguna_2025-10-05,América,post_championship_context,50,14,1.950202,3
+SantosLaguna_vs_America_2026-04-05,América,post_championship_context,13,14,1.773163,1
+America_vs_Necaxa_2025-02-15,América,post_championship_context,36,14,1.67047,2
+AtleticoSanLuis_vs_Queretaro_2023-03-11,Atlético San Luis,pre_america,38,14,0.889399,2

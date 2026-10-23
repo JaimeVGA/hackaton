@@ -20,6 +20,12 @@ PYTHONPATH=. python -m jardine_analysis.pipeline \
   tiros, goles y `xG`.
 - `decision_summary.csv`: sustituciones y cambios de formación registrados por
   etapa y equipo.
+- `variability_summary.csv`: media, desviación estándar, cuartiles y `n` por
+  métrica, etapa y equipo.
+- `progression_summary.csv`: pases, pases progresivos y pases clave por zona
+  cruda y carril.
+- `defensive_summary.csv`: acciones defensivas por tipo y zona de la fuente.
+- `territorial_proxy.csv`: cuota espacial observable con etiqueta de proxy.
 - `key_actions.csv`: los 25 partidos con mayor combinación de recuperaciones
   altas y `xG`.
 - `stage_rules.json`: reglas y limitaciones de clasificación.
@@ -47,6 +53,8 @@ PYTHONPATH=. python -m jardine_analysis.pipeline \
 | `ppda` | `opponent_passes / ppda_actions`; `null` si el denominador es cero. |
 | `final_state` | Estado del marcador en el último evento disponible del equipo focal. |
 | `final_goal_difference` | Diferencia de goles en ese último evento. |
+| `proxy_share` | Proporción de eventos con `x_inicio >= 60` del equipo focal sobre ambos equipos; no es Field Tilt oficial. |
+| `std`, `q1`, `q3` | Dispersión entre partidos; `std` no disponible cuando `n < 2`. |
 
 `context_summary.csv` cuenta filas de eventos de `estado_partido` y también
 reporta cuántos partidos aparecen en cada estado; no debe interpretarse como
@@ -67,3 +75,5 @@ Las coordenadas no están normalizadas por dirección de ataque. Por eso las
 presiones/recuperaciones altas usan la zona categórica de la fuente, mientras
 que PPDA sigue siendo una primera definición operativa basada en `x <= 72`, no
 una medida final lista para una conclusión fuerte.
+Las zonas `0-40`, `40-80` y `80-120`, y los carriles, son particiones de
+coordenadas crudas; no equivalen automáticamente a tercios ofensivos.
